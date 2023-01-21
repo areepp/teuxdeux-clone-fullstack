@@ -11,7 +11,7 @@ datasource db {
 }
 
 model Todo {
-  id         String    @id
+  id         String    @id @default(uuid())
   text       String
   checked    Boolean   @default(false)
   Calendar   Calendar? @relation(fields: [calendarId], references: [id])
@@ -21,7 +21,7 @@ model Todo {
 }
 
 model Calendar {
-  id        String   @id
+  id        String   @id @default(uuid())
   todos     Todo[]
   todoOrder String[]
 }
