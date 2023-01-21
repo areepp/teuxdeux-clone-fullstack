@@ -1,11 +1,6 @@
 import { db } from '../utils/db'
+import Todo from './todo.model'
 
-interface ITodo {
-  id: string
-  text: string
-  checked: boolean
-}
-
-export const getTodos = async (): Promise<ITodo[]> => {
+export const getTodos = async (): Promise<Todo[]> => {
   return db.todo.findMany()
 }
