@@ -11,7 +11,32 @@ datasource db {
 }
 
 model Todo {
-  id String @id
-  text String
-  checked Boolean
+  id         String    @id
+  text       String
+  checked    Boolean   @default(false)
+  Calendar   Calendar? @relation(fields: [calendarId], references: [id])
+  calendarId String?
+  List       List?     @relation(fields: [listId], references: [id])
+  listId     Int?
+}
+
+model Calendar {
+  id        String   @id
+  todos     Todo[]
+  todoOrder String[]
+}
+
+model List {
+  id               Int             @id @default(autoincrement())
+  title            String          @default("")
+  todos            Todo[]
+  todoOrder        String[]
+  ListCollection   ListCollection? @relation(fields: [listCollectionId], references: [id])
+  listCollectionId Int?
+}
+
+model ListCollection {
+  id        Int      @id @default(autoincrement())
+  lists     List[]
+  listOrder String[]
 }
