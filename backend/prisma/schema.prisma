@@ -21,22 +21,22 @@ model Todo {
 }
 
 model Calendar {
-  id        String   @id @default(uuid())
+  id        String @id @default(uuid())
   todos     Todo[]
-  todoOrder String[]
+  todoOrder Int[]
 }
 
 model List {
   id               Int             @id @default(autoincrement())
   title            String          @default("")
   todos            Todo[]
-  todoOrder        String[]
+  todoOrder        Int[]
   ListCollection   ListCollection? @relation(fields: [listCollectionId], references: [id])
   listCollectionId Int?
 }
 
 model ListCollection {
-  id        Int      @id @default(autoincrement())
+  id        Int    @id @default(autoincrement())
   lists     List[]
-  listOrder String[]
+  listOrder Int[]  @default([])
 }

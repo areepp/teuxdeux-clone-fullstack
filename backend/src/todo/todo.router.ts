@@ -2,7 +2,12 @@ import express from 'express'
 import { Request, Response } from 'express'
 import validateRequest from '../middleware/validateRequest'
 import * as todoController from './todo.controller'
-import Todo, { ArrayOfIdsInput, EditTodoInput } from './todo.model'
+import Todo, {
+  AddTodoBody,
+  ArrayOfIdsInput,
+  DeleteTodoBody,
+  EditTodoInput,
+} from './todo.model'
 
 export const todoRouter = express.Router()
 
@@ -16,7 +21,7 @@ todoRouter.get(
 
 todoRouter.post(
   '/',
-  validateRequest({ body: Todo.pick({ text: true }) }),
+  validateRequest({ body: AddTodoBody }),
   todoController.addTodo,
 )
 
@@ -28,4 +33,10 @@ todoRouter.patch(
   todoController.editTodo,
 )
 
-todoRouter.delete('/:id', todoController.deleteTodo)
+todoRouter.delete(
+  '/:id',
+  validateRequest({
+    body: DeleteTodoBody,
+  }),
+  todoController.deleteTodo,
+)

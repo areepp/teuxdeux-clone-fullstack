@@ -48,6 +48,7 @@ export const deleteTodo = async (req: Request, res: Response) => {
   try {
     const deletedTodo = await todoService.deleteTodo({
       id: parseInt(req.params.id),
+      listId: req.body.listId,
     })
     return res.status(200).json(deletedTodo)
   } catch (error) {

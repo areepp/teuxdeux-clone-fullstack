@@ -11,6 +11,15 @@ export const EditTodoInput = z.object({
   checked: z.boolean().optional(),
 })
 
+export const AddTodoBody = z.object({
+  text: z.string(),
+  listId: z.number().optional(),
+})
+
+export const DeleteTodoBody = z.object({
+  listId: z.number().optional(),
+})
+
 export const ArrayOfIdsInput = z.object({
   ids: z.array(z.number()),
 })
