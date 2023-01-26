@@ -1,5 +1,5 @@
 import express from 'express'
-import validateRequest from '../middleware/validateRequest'
+import validateRequest from '../middlewares/validateRequest'
 import * as listCollectionController from './listCollection.controller'
 import ListCollection from './listCollection.model'
 

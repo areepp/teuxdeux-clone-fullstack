@@ -6,24 +6,23 @@ const Todo = z.object({
   checked: z.boolean(),
 })
 
-export const EditTodoInput = z.object({
+export const EditTodoSchema = z.object({
   text: z.string().optional(),
   checked: z.boolean().optional(),
 })
 
-export const AddTodoBody = z.object({
+export const AddTodoSchema = z.object({
   text: z.string(),
   listId: z.number().optional(),
+  dateColumnId: z.string().optional(),
 })
 
-export const DeleteTodoBody = z.object({
+export const DeleteTodoSchema = z.object({
   listId: z.number().optional(),
-})
-
-export const ArrayOfIdsInput = z.object({
-  ids: z.array(z.number()),
+  dateColumnId: z.string().optional(),
 })
 
 type Todo = z.infer<typeof Todo>
+export type DeleteTodoSchema = z.infer<typeof DeleteTodoSchema>
 
 export default Todo

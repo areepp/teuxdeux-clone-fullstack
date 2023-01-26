@@ -11,19 +11,19 @@ datasource db {
 }
 
 model Todo {
-  id         Int       @id @default(autoincrement())
-  text       String
-  checked    Boolean   @default(false)
-  Calendar   Calendar? @relation(fields: [calendarId], references: [id])
-  calendarId String?
-  List       List?     @relation(fields: [listId], references: [id])
-  listId     Int?
+  id           Int         @id @default(autoincrement())
+  text         String
+  checked      Boolean     @default(false)
+  List         List?       @relation(fields: [listId], references: [id])
+  listId       Int?
+  DateColumn   DateColumn? @relation(fields: [dateColumnId], references: [id])
+  dateColumnId String?
 }
 
-model Calendar {
+model DateColumn {
   id        String @id @default(uuid())
   todos     Todo[]
-  todoOrder Int[]
+  todoOrder Int[]  @default([])
 }
 
 model List {
@@ -36,7 +36,7 @@ model List {
 }
 
 model ListCollection {
-  id        Int    @id @default(autoincrement())
+  id        Int    @id
   lists     List[]
   listOrder Int[]  @default([])
 }

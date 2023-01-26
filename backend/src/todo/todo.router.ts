@@ -1,34 +1,26 @@
 import express from 'express'
-import { Request, Response } from 'express'
-import validateRequest from '../middleware/validateRequest'
+import validateRequest from '../middlewares/validateRequest'
 import * as todoController from './todo.controller'
 import Todo, {
-  AddTodoBody,
-  ArrayOfIdsInput,
-  DeleteTodoBody,
-  EditTodoInput,
+  AddTodoSchema,
+  DeleteTodoSchema,
+  EditTodoSchema,
 } from './todo.model'
 
 export const todoRouter = express.Router()
 
 todoRouter.get('/', todoController.getTodos)
 
-todoRouter.get(
-  '/by-ids',
-  validateRequest({ body: ArrayOfIdsInput }),
-  todoController.getTodosByIds,
-)
-
 todoRouter.post(
   '/',
-  validateRequest({ body: AddTodoBody }),
+  validateRequest({ body: AddTodoSchema }),
   todoController.addTodo,
 )
 
 todoRouter.patch(
   '/:id',
   validateRequest({
-    body: EditTodoInput,
+    body: EditTodoSchema,
   }),
   todoController.editTodo,
 )
@@ -36,7 +28,7 @@ todoRouter.patch(
 todoRouter.delete(
   '/:id',
   validateRequest({
-    body: DeleteTodoBody,
+    body: DeleteTodoSchema,
   }),
   todoController.deleteTodo,
 )

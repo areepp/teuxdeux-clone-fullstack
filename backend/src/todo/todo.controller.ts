@@ -1,6 +1,6 @@
 import * as todoService from './todo.service'
 import { Request, Response } from 'express'
-import Todo from './todo.model'
+import { DeleteTodoSchema } from './todo.model'
 
 export const getTodos = async (req: Request, res: Response) => {
   try {
@@ -8,16 +8,6 @@ export const getTodos = async (req: Request, res: Response) => {
     return res.status(200).json(todos)
   } catch (error: any) {
     return res.status(500).json(error.message)
-  }
-}
-
-export const getTodosByIds = async (req: Request, res: Response) => {
-  try {
-    const { ids } = req.body
-    const todos = await todoService.getTodosByIds({ ids })
-    return res.status(200).json(todos)
-  } catch (error) {
-    return res.json(error)
   }
 }
 
@@ -44,11 +34,14 @@ export const editTodo = async (req: Request, res: Response) => {
   }
 }
 
-export const deleteTodo = async (req: Request, res: Response) => {
+export const deleteTodo = async (
+  req: Request<{ id: string }, {}, DeleteTodoSchema>,
+  res: Response,
+) => {
   try {
     const deletedTodo = await todoService.deleteTodo({
       id: parseInt(req.params.id),
-      listId: req.body.listId,
+      ...req.body,
     })
     return res.status(200).json(deletedTodo)
   } catch (error) {
