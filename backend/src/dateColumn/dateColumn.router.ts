@@ -5,6 +5,7 @@ import DateColumn, {
   GetDateColumnsSchema,
 } from './dateColumn.model'
 import * as dateColumnController from './dateColumn.controller'
+import { verifyJWT } from '../middlewares/verifyJWT'
 
 export const dateColumnRouter = express.Router()
 

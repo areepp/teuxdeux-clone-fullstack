@@ -5,12 +5,12 @@ const User = z.object({
   email: z.string().email(),
 })
 
-export const SignUpUserSchema = z.object({
+export const AuthSchema = z.object({
   email: z.string().email(),
   password: z.string(),
 })
 
 type User = z.infer<typeof User>
-export type SignUpUserSchema = z.infer<typeof SignUpUserSchema>
+export type AuthSchema = z.infer<typeof AuthSchema>
 
 export default User

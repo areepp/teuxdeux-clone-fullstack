@@ -1,9 +1,9 @@
 import { db } from '.././utils/db'
-import { SignUpUserSchema } from './auth.model'
+import { AuthSchema } from './auth.model'
 import bcrypt from 'bcryptjs'
 import { ResponseError } from '../types/Error'
 
-export const signup = async ({ email, password }: SignUpUserSchema) => {
+export const signup = async ({ email, password }: AuthSchema) => {
   const userExists = await db.user.count({ where: { email } })
 
   if (userExists) {
@@ -23,4 +23,35 @@ export const signup = async ({ email, password }: SignUpUserSchema) => {
   })
 
   return newUser
+}
+
+export const login = async ({ email, password }: AuthSchema) => {
+  const user = await db.user.findUnique({ where: { email } })
+
+  if (!user) {
+    throw new Error('Incorrect email or password')
+  }
+
+  const passwordMatches = await bcrypt.compare(password, user.password)
+
+  if (!passwordMatches) {
+    throw new Error('Incorrect email or password')
+  }
+
+  return user
+}
+
+export const storeRefreshToken = async ({
+  id,
+  refreshToken,
+}: {
+  id: string
+  refreshToken: string
+}) => {
+  const user = db.user.update({
+    where: { id },
+    data: { refreshToken },
+  })
+
+  return user
 }
