@@ -1,14 +1,7 @@
 import { cert, getApp, initializeApp } from 'firebase-admin/app'
 import { getAuth } from 'firebase-admin/auth'
 
-// import getConfig from 'next/config'
-
-// const { publicRuntimeConfig } = getConfig()
-// const { FIREBASE_PRIVATE_KEY, FIREBASE_CLIENT_EMAIL } = publicRuntimeConfig
-
 const { FIREBASE_PRIVATE_KEY, FIREBASE_CLIENT_EMAIL } = process.env
-
-console.log('hei')
 
 const { privateKey } = JSON.parse(FIREBASE_PRIVATE_KEY as string)
 

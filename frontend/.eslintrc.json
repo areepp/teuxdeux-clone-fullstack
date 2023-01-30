@@ -1,7 +1,7 @@
 {
   "extends": ["next", "next/core-web-vitals", "airbnb", "airbnb-typescript"],
   "parserOptions": {
-    "project": "./tsconfig.json"
+    "project": "./frontend/tsconfig.json"
   },
   "globals": {
     "React": "readonly"
@@ -15,6 +15,7 @@
     "semi": "off",
     "@typescript-eslint/semi": "off",
     "import/prefer-default-export": "off",
+    "import/extensions": "never",
     "implicit-arrow-linebreak": "off",
     "no-plusplus": ["error", { "allowForLoopAfterthoughts": true }],
     "react/jsx-props-no-spreading": "off",

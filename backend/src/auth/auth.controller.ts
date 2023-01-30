@@ -6,6 +6,7 @@ import { JWTPayload } from '../types/jwt'
 export const signup = async (
   req: Request<{}, {}, { email: string; password: string }>,
   res: Response,
+  next: NextFunction,
 ) => {
   try {
     const createUser = await authService.signup(req.body)
@@ -14,7 +15,7 @@ export const signup = async (
       message: 'User succesfully created',
     })
   } catch (error) {
-    return res.json(error)
+    return next(error)
   }
 }
 

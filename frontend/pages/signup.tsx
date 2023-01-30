@@ -9,6 +9,7 @@ import * as authService from '@/lib/auth.service'
 import { adminAuth } from '@/lib/firebaseAdmin'
 import * as userService from '@/lib/user.service'
 import Button from '@/components/Auth/Button'
+import { useMutation } from 'react-query'
 
 interface IMessage {
   text: string
@@ -17,7 +18,7 @@ interface IMessage {
 
 const SignUp = () => {
   const [message, setMessage] = useState<IMessage | null>()
-  const [signUpButtonDisabled, setSignUpButtonDisabled] = useState(false)
+  const { isLoading, mutateAsync } = useMutation(authService.signup)
 
   const {
     register,
@@ -27,19 +28,18 @@ const SignUp = () => {
   } = useForm<Inputs>()
 
   const onSubmit: SubmitHandler<Inputs> = async (data) => {
-    setSignUpButtonDisabled(true)
     try {
-      const res = await authService.signup(data)
-      const { uid, email } = res.user
-      if (email) await userService.storeUserToFirestore({ uid, email })
-      setMessage({ text: 'Sign up succesful', type: 'success' })
+      const res = await mutateAsync(data)
+      // const { uid, email } = res.user
+      // if (email) await userService.storeUserToFirestore({ uid, email })
+      setMessage({
+        text: 'Sign up succesful, you can now login.',
+        type: 'success',
+      })
       reset()
-    } catch (error: unknown) {
-      if (error instanceof FirebaseError) {
-        setMessage({ text: error.message, type: 'error' })
-      }
+    } catch (error: any) {
+      setMessage({ text: error.message, type: 'error' })
     }
-    setSignUpButtonDisabled(false)
   }
 
   return (
@@ -72,11 +72,7 @@ const SignUp = () => {
           {errors.password && (
             <span className="text-xs">This field is required</span>
           )}
-          <Button
-            text="Sign Up"
-            type="submit"
-            disabled={signUpButtonDisabled}
-          />
+          <Button text="Sign Up" type="submit" disabled={isLoading} />
         </form>
 
         {/* FOOTER */}

@@ -1,6 +1,6 @@
 import { useEffect } from 'react'
 import { DragDropContext, DropResult } from 'react-beautiful-dnd'
-import CalendarView from '@/components/Dashboard/CalendarView/'
+import CalendarView from '@/components/Dashboard/CalendarView'
 import { getInitialColumns } from '@/helper/dateHelper'
 import { onDragEndLogic } from '@/helper/onDragEndLogic'
 import * as dayService from '@/lib/day.service'
