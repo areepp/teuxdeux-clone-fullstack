@@ -8,11 +8,15 @@ import Input, { Inputs } from '@/components/Auth/Input'
 import * as authService from '@/lib/auth.service'
 import { adminAuth } from '@/lib/firebaseAdmin'
 import Button from '@/components/Auth/Button'
+import { useMutation } from 'react-query'
+import { useMyAuth } from '@/context/MyAuthContext'
 
 const Login = () => {
   const router = useRouter()
+  const { setUser } = useMyAuth()
   const [errorMessage, setErrorMessage] = useState<string | null>(null)
-  const [loginButtonDisabled, setLoginButtonDisabled] = useState(false)
+
+  const { isLoading, mutateAsync } = useMutation(authService.login)
 
   const {
     register,
@@ -21,28 +25,25 @@ const Login = () => {
   } = useForm<Inputs>()
 
   const onSubmit: SubmitHandler<Inputs> = async (data) => {
-    setLoginButtonDisabled(true)
     try {
-      await authService.login(data)
+      const res = await mutateAsync(data)
+      setUser(res)
       router.push('/')
     } catch (error: any) {
-      setErrorMessage('Incorrect email and/or password')
+      setErrorMessage(error.message)
     }
-    setLoginButtonDisabled(false)
   }
 
   const demoLogin = async () => {
-    setLoginButtonDisabled(true)
     try {
-      await authService.login({
+      await mutateAsync({
         email: 'demo@test.com',
         password: 'demogorgon',
       })
       router.push('/')
     } catch (error: any) {
-      setErrorMessage('Incorrect email and/or password')
+      console.log(error)
     }
-    setLoginButtonDisabled(false)
   }
 
   return (
@@ -69,7 +70,7 @@ const Login = () => {
           {errors.password && (
             <span className="text-xs">This field is required</span>
           )}
-          <Button text="Log in" disabled={loginButtonDisabled} type="submit" />
+          <Button text="Log in" disabled={isLoading} type="submit" />
         </form>
 
         <p className="mt-4 w-full text-center">or</p>
@@ -77,7 +78,7 @@ const Login = () => {
         <Button
           className="mt-4"
           text="Click here to log in using demo account"
-          disabled={loginButtonDisabled}
+          disabled={isLoading}
           type="submit"
           onClick={demoLogin}
         />

@@ -30,8 +30,6 @@ const SignUp = () => {
   const onSubmit: SubmitHandler<Inputs> = async (data) => {
     try {
       const res = await mutateAsync(data)
-      // const { uid, email } = res.user
-      // if (email) await userService.storeUserToFirestore({ uid, email })
       setMessage({
         text: 'Sign up succesful, you can now login.',
         type: 'success',

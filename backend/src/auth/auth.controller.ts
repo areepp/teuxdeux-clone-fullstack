@@ -49,7 +49,7 @@ export const login = async (
       maxAge: 24 * 60 * 60 * 7 * 1000, // 7 days
     })
 
-    return res.json({ accessToken })
+    return res.json({ accessToken, email: user.email, id: user.id })
   } catch (error) {
     next(error)
   }

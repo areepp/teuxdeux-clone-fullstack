@@ -33,7 +33,7 @@ export const signup = async (body: Inputs) => {
 
 export const login = async (body: Inputs) => {
   try {
-    const { data } = await axios.post('/auth/signup', JSON.stringify(body), {
+    const { data } = await axios.post('/auth/login', JSON.stringify(body), {
       headers: {
         'Content-Type': 'application/json',
       },
