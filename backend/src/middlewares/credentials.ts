@@ -1,6 +1,5 @@
 import { NextFunction, Request, Response } from 'express'
-
-const ALLOWED_ORIGINS = ['http://localhost:3000']
+import { ALLOWED_ORIGINS } from '../utils/allowedOrigins'
 
 export const credentials = (
   req: Request,

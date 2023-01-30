@@ -11,6 +11,8 @@ import { authRouter } from './auth/auth.router'
 import { errorHandler } from './middlewares/errorHandler'
 import User from './auth/auth.model'
 import { verifyJWT } from './middlewares/verifyJWT'
+import { credentials } from './middlewares/credentials'
+import { corsOptions } from './utils/corsOptions'
 
 declare global {
   namespace Express {
@@ -22,7 +24,8 @@ declare global {
 
 const app = express()
 
-app.use(cors())
+app.use(credentials)
+app.use(cors(corsOptions))
 app.use(express.json())
 app.use(cookieParser())
 
