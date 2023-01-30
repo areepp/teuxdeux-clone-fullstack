@@ -28,7 +28,7 @@ app.use(cookieParser())
 
 app.use('/api/auth', authRouter)
 
-// AUTHENTICATION NEEDED
+// AUTHENTICATION REQUIRED
 app.use(verifyJWT)
 app.use('/api/todos', todoRouter)
 app.use('/api/lists', listRouter)

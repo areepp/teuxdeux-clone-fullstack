@@ -12,6 +12,8 @@ const firebaseConfig = {
   measurementId: process.env.NEXT_PUBLIC_MEASUREMENTID,
 }
 
+console.log('hei')
+
 const initializeAppIfNecessary = () => {
   try {
     return getApp()

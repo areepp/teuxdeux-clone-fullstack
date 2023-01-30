@@ -1,6 +1,7 @@
 import { NextFunction, Request, Response } from 'express'
 import * as authService from './auth.service'
 import jwt from 'jsonwebtoken'
+import { JWTPayload } from '../types/jwt'
 
 export const signup = async (
   req: Request<{}, {}, { email: string; password: string }>,
@@ -26,18 +27,18 @@ export const login = async (
     const user = await authService.login(req.body)
 
     const accessToken = jwt.sign(
-      { email: user.email, id: user.id },
+      { id: user.id },
       process.env.ACCESS_TOKEN_SECRET as string,
       { expiresIn: '15m' },
     )
 
     const refreshToken = jwt.sign(
-      { email: user.email, id: user.id },
+      { id: user.id },
       process.env.REFRESH_TOKEN_SECRET as string,
       { expiresIn: '1y' },
     )
 
-    const storeRefreshToken = await authService.storeRefreshToken({
+    const storeRefreshToken = await authService.editUser({
       id: user.id,
       refreshToken,
     })
@@ -50,5 +51,73 @@ export const login = async (
     return res.json({ accessToken })
   } catch (error) {
     next(error)
+  }
+}
+
+export const logout = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
+  const cookies = req.cookies
+  if (!cookies?.jwt) return res.json('logged out')
+
+  const refreshToken = cookies.jwt
+  const userFound = await authService.userWithRefreshTokenExists(refreshToken)
+
+  if (!userFound) {
+    res.clearCookie('jwt', { httpOnly: true, sameSite: 'none', secure: true })
+    return res.json('logged out')
+  }
+
+  const removeRefreshToken = await authService.editUser({
+    id: userFound.id,
+    refreshToken: '',
+  })
+
+  res.clearCookie('jwt', { httpOnly: true, sameSite: 'none', secure: true })
+  return res.json('logged out')
+}
+
+export const handleRefreshToken = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
+  try {
+    const cookies = req.cookies
+
+    if (!cookies?.jwt) {
+      res.status(401)
+      throw new Error('unauthorized')
+    }
+
+    const refreshToken = cookies.jwt
+    const userFound = await authService.userWithRefreshTokenExists(refreshToken)
+
+    if (!userFound) {
+      res.status(403)
+      throw new Error('Forbidden')
+    }
+
+    const user = jwt.verify(
+      refreshToken,
+      process.env.REFRESH_TOKEN_SECRET as string,
+    ) as JWTPayload
+
+    if (userFound.id !== user.id) {
+      res.status(403)
+      throw new Error('Forbidden')
+    }
+
+    const accessToken = jwt.sign(
+      { id: user.id },
+      process.env.ACCESS_TOKEN_SECRET as string,
+      { expiresIn: '15m' },
+    )
+
+    return res.json({ accessToken })
+  } catch (err) {
+    next(err)
   }
 }

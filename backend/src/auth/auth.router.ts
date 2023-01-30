@@ -16,3 +16,7 @@ authRouter.post(
   validateRequest({ body: AuthSchema }),
   authController.login,
 )
+
+authRouter.get('/logout', authController.logout)
+
+authRouter.get('/refresh', authController.handleRefreshToken)

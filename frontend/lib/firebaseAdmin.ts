@@ -8,6 +8,8 @@ import { getAuth } from 'firebase-admin/auth'
 
 const { FIREBASE_PRIVATE_KEY, FIREBASE_CLIENT_EMAIL } = process.env
 
+console.log('hei')
+
 const { privateKey } = JSON.parse(FIREBASE_PRIVATE_KEY as string)
 
 const initializeAppIfNecessary = () => {

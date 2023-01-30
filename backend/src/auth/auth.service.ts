@@ -41,17 +41,25 @@ export const login = async ({ email, password }: AuthSchema) => {
   return user
 }
 
-export const storeRefreshToken = async ({
+export const userWithRefreshTokenExists = async (refreshToken: string) =>
+  db.user.findUnique({
+    where: {
+      refreshToken,
+    },
+  })
+
+export const editUser = async ({
   id,
   refreshToken,
 }: {
   id: string
   refreshToken: string
-}) => {
-  const user = db.user.update({
-    where: { id },
-    data: { refreshToken },
+}) =>
+  db.user.update({
+    where: {
+      id,
+    },
+    data: {
+      refreshToken,
+    },
   })
-
-  return user
-}
