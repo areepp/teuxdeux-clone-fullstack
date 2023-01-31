@@ -1,4 +1,5 @@
 import { Inputs } from '@/components/Auth/Input'
+import { GetServerSidePropsContext } from 'next'
 import axios from './axios'
 
 export const signup = async (body: Inputs) => {
@@ -22,6 +23,22 @@ export const login = async (body: Inputs) => {
         'Content-Type': 'application/json',
       },
       withCredentials: true,
+    })
+    return data
+  } catch (err: any) {
+    throw err.response.data
+  }
+}
+
+export const getRefreshTokenSSR = async (
+  context: GetServerSidePropsContext,
+) => {
+  try {
+    const { data } = await axios.get('/auth/refresh', {
+      withCredentials: true,
+      headers: {
+        cookie: context.req.headers.cookie,
+      },
     })
     return data
   } catch (err: any) {

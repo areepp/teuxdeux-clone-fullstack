@@ -87,16 +87,17 @@ const SignUp = () => {
   )
 }
 
-export const getServerSideProps = async (ctx: GetServerSidePropsContext) => {
+export const getServerSideProps = async (
+  context: GetServerSidePropsContext,
+) => {
   try {
     // user found in the cookies
-    const { token } = nookies.get(ctx)
-    await adminAuth.verifyIdToken(token)
+    await authService.getRefreshTokenSSR(context)
 
-    ctx.res.writeHead(302, {
+    context.res.writeHead(302, {
       Location: '/',
     })
-    ctx.res.end()
+    context.res.end()
     return { props: {} as never }
   } catch (err) {
     // user not found in the cookies

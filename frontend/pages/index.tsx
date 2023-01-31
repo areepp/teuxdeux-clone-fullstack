@@ -1,8 +1,8 @@
 import Dashboard from '@/components/Dashboard'
 import Header from '@/components/Header'
 import { useMyAuth } from '@/context/MyAuthContext'
-import { withAuthServerSideProps } from '@/lib/withAuthServerSideProps'
-import axios from '@/lib/axios'
+import * as authService from '@/lib/auth.service'
+import { GetServerSidePropsContext } from 'next'
 
 const Index = () => {
   const { user } = useMyAuth()
@@ -15,18 +15,23 @@ const Index = () => {
   )
 }
 
-export const getServerSideProps = async (context: any) => {
+export const getServerSideProps = async (
+  context: GetServerSidePropsContext,
+) => {
   try {
-    const { data } = await axios.get('/auth/refresh', {
-      withCredentials: true,
-      headers: {
-        cookie: context.req.headers.cookie,
-      },
-    })
-  } catch (err: any) {}
+    const { accessToken } = await authService.getRefreshTokenSSR(context)
 
-  return {
-    props: {},
+    return {
+      props: {
+        accessToken,
+      },
+    }
+  } catch (err: any) {
+    context.res.writeHead(302, {
+      Location: '/login',
+    })
+    context.res.end()
+    return { props: {} as never }
   }
 }
 
