@@ -28,13 +28,13 @@ export const login = async (
     const user = await authService.login(req.body)
 
     const accessToken = jwt.sign(
-      { id: user.id },
+      { userInfo: { id: user.id, email: user.email } },
       process.env.ACCESS_TOKEN_SECRET as string,
       { expiresIn: '15m' },
     )
 
     const refreshToken = jwt.sign(
-      { id: user.id },
+      { userInfo: { id: user.id, email: user.email } },
       process.env.REFRESH_TOKEN_SECRET as string,
       { expiresIn: '1y' },
     )
@@ -49,7 +49,7 @@ export const login = async (
       maxAge: 24 * 60 * 60 * 7 * 1000, // 7 days
     })
 
-    return res.json({ accessToken, email: user.email, id: user.id })
+    return res.json({ accessToken })
   } catch (error) {
     next(error)
   }
@@ -101,18 +101,18 @@ export const handleRefreshToken = async (
       throw new Error('Forbidden')
     }
 
-    const user = jwt.verify(
+    const { userInfo } = jwt.verify(
       refreshToken,
       process.env.REFRESH_TOKEN_SECRET as string,
     ) as JWTPayload
 
-    if (userFound.id !== user.id) {
+    if (userFound.id !== userInfo.id) {
       res.status(403)
       throw new Error('Forbidden')
     }
 
     const accessToken = jwt.sign(
-      { id: user.id },
+      { userInfo: { id: userFound.id, email: userFound.email } },
       process.env.ACCESS_TOKEN_SECRET as string,
       { expiresIn: '15m' },
     )
