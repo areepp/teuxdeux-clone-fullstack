@@ -2,10 +2,11 @@ import Dashboard from '@/components/Dashboard'
 import Header from '@/components/Header'
 import { useMyAuth } from '@/context/MyAuthContext'
 import * as authService from '@/lib/auth.service'
+import useUserStore from '@/stores/user'
 import { GetServerSidePropsContext } from 'next'
 
 const Index = () => {
-  const { user } = useMyAuth()
+  const { user } = useUserStore()
   return (
     <div className="flex flex-col h-full">
       <Header />

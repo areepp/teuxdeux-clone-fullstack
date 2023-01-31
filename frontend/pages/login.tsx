@@ -10,10 +10,11 @@ import { adminAuth } from '@/lib/firebaseAdmin'
 import Button from '@/components/Auth/Button'
 import { useMutation } from 'react-query'
 import { useMyAuth } from '@/context/MyAuthContext'
+import useUserStore from '@/stores/user'
 
 const Login = () => {
   const router = useRouter()
-  const { setUser } = useMyAuth()
+  const { setUser } = useUserStore()
   const [errorMessage, setErrorMessage] = useState<string | null>(null)
 
   const { isLoading, mutateAsync } = useMutation(authService.login)

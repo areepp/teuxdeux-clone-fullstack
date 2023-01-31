@@ -1,4 +1,5 @@
 import { useMyAuth } from '@/context/MyAuthContext'
+import useUserStore from '@/stores/user'
 import { useRouter } from 'next/router'
 import { useState } from 'react'
 import * as authService from '../../lib/auth.service'
@@ -7,12 +8,12 @@ import MyOutsideClickHandler from '../Common/MyOutsideClickHandler'
 
 const Profile = () => {
   const router = useRouter()
-  const { user, setUser } = useMyAuth()
+  const { user, resetUser } = useUserStore()
   const [isProfileClicked, setIsProfileClicked] = useState(false)
 
   const handleLogOut = async () => {
     await authService.logOut()
-    setUser(null)
+    resetUser()
     router.push('/login')
   }
 
