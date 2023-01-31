@@ -17,6 +17,6 @@ authRouter.post(
   authController.login,
 )
 
-authRouter.get('/logout', authController.logout)
+authRouter.post('/logout', authController.logout)
 
 authRouter.get('/refresh', authController.handleRefreshToken)
