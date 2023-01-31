@@ -1,21 +1,5 @@
-import {
-  createUserWithEmailAndPassword,
-  signInWithEmailAndPassword,
-  signOut,
-} from 'firebase/auth'
 import { Inputs } from '@/components/Auth/Input'
-import { clientAuth } from './firebaseClient'
 import axios from './axios'
-
-// export const signup = (data: Inputs) => {
-//   const { email, password } = data
-//   return createUserWithEmailAndPassword(clientAuth, email, password)
-// }
-
-// export const login = async (data: Inputs) => {
-//   const { email, password } = data
-//   return signInWithEmailAndPassword(clientAuth, email, password)
-// }
 
 export const signup = async (body: Inputs) => {
   try {
@@ -46,4 +30,10 @@ export const login = async (body: Inputs) => {
 }
 
 // prettier-ignore
-export const logOut = async () => signOut(clientAuth)
+export const logOut = async () =>  {
+  try {
+  const { data } = await axios.post('/auth/logout', {}, { withCredentials: true })
+  } catch (err: any) {
+    throw err.response.data
+  }
+}

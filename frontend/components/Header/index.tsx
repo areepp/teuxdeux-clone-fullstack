@@ -1,3 +1,4 @@
+import { useMyAuth } from '@/context/MyAuthContext'
 import { useRouter } from 'next/router'
 import { useState } from 'react'
 import * as authService from '../../lib/auth.service'
@@ -6,11 +7,12 @@ import MyOutsideClickHandler from '../Common/MyOutsideClickHandler'
 
 const Profile = () => {
   const router = useRouter()
-  const { user } = useAuth()
+  const { user, setUser } = useMyAuth()
   const [isProfileClicked, setIsProfileClicked] = useState(false)
 
   const handleLogOut = async () => {
     await authService.logOut()
+    setUser(null)
     router.push('/login')
   }
 
@@ -21,7 +23,7 @@ const Profile = () => {
         className="cursor-pointer hover:text-white transition-all"
         onClick={() => setIsProfileClicked(!isProfileClicked)}
       >
-        {user?.email}
+        {user?.email ? user?.email : 'nothing'}
       </button>
 
       {isProfileClicked && (
