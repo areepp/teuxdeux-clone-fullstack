@@ -10,11 +10,7 @@ const queryClient = new QueryClient()
 const App = ({ Component, pageProps }: AppProps) => (
   <>
     <QueryClientProvider client={queryClient}>
-      <AuthProvider>
-        <MyAuthProvider>
-          <Component {...pageProps} />
-        </MyAuthProvider>
-      </AuthProvider>
+      <Component {...pageProps} />
       <Analytics />
     </QueryClientProvider>
   </>

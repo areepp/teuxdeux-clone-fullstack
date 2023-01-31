@@ -27,8 +27,8 @@ const Login = () => {
 
   const onSubmit: SubmitHandler<Inputs> = async (data) => {
     try {
-      const res = await mutateAsync(data)
-      setUser(res)
+      const accessToken = await mutateAsync(data)
+      setUser(accessToken)
       router.push('/')
     } catch (error: any) {
       setErrorMessage(error.message)

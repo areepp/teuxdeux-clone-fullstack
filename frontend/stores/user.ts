@@ -1,6 +1,7 @@
 import create from 'zustand'
+import jwtDecode from 'jwt-decode'
 
-interface User {
+export interface User {
   email: string
   id: string
   accessToken: string
@@ -8,16 +9,21 @@ interface User {
 
 export interface UserStore {
   user: User | null
-  setUser: (user: User) => void
+  setUser: (accessToken: string) => void
   resetUser: () => void
 }
 
 const useUserStore = create<UserStore>((set: any) => ({
   user: null,
-  setUser: (user: User) =>
-    set(() => ({
-      user,
-    })),
+  setUser: (accessToken: string) =>
+    set(() => {
+      const { userInfo } = jwtDecode<{ userInfo: Omit<User, 'id'> }>(
+        accessToken,
+      )
+      return {
+        user: { ...userInfo, accessToken },
+      }
+    }),
   resetUser: () =>
     set(() => ({
       user: null,

@@ -4,13 +4,12 @@ import axios from './axios'
 
 export const signup = async (body: Inputs) => {
   try {
-    const { data } = await axios.post('/auth/signup', JSON.stringify(body), {
+    await axios.post('/auth/signup', JSON.stringify(body), {
       headers: {
         'Content-Type': 'application/json',
       },
       withCredentials: true,
     })
-    return data
   } catch (err: any) {
     throw err.response.data
   }
@@ -18,13 +17,17 @@ export const signup = async (body: Inputs) => {
 
 export const login = async (body: Inputs) => {
   try {
-    const { data } = await axios.post('/auth/login', JSON.stringify(body), {
-      headers: {
-        'Content-Type': 'application/json',
+    const { data } = await axios.post<{ accessToken: string }>(
+      '/auth/login',
+      JSON.stringify(body),
+      {
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        withCredentials: true,
       },
-      withCredentials: true,
-    })
-    return data
+    )
+    return data.accessToken
   } catch (err: any) {
     throw err.response.data
   }
@@ -34,13 +37,13 @@ export const getRefreshTokenSSR = async (
   context: GetServerSidePropsContext,
 ) => {
   try {
-    const { data } = await axios.get('/auth/refresh', {
+    const { data } = await axios.get<{ accessToken: string }>('/auth/refresh', {
       withCredentials: true,
       headers: {
         cookie: context.req.headers.cookie,
       },
     })
-    return data
+    return data.accessToken
   } catch (err: any) {
     throw err.response.data
   }
@@ -49,7 +52,7 @@ export const getRefreshTokenSSR = async (
 // prettier-ignore
 export const logOut = async () =>  {
   try {
-  const { data } = await axios.post('/auth/logout', {}, { withCredentials: true })
+  await axios.post('/auth/logout', {}, { withCredentials: true })
   } catch (err: any) {
     throw err.response.data
   }

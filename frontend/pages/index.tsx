@@ -2,11 +2,16 @@ import Dashboard from '@/components/Dashboard'
 import Header from '@/components/Header'
 import { useMyAuth } from '@/context/MyAuthContext'
 import * as authService from '@/lib/auth.service'
-import useUserStore from '@/stores/user'
+import useUserStore, { User } from '@/stores/user'
+import jwtDecode from 'jwt-decode'
 import { GetServerSidePropsContext } from 'next'
+import { useEffect } from 'react'
 
-const Index = () => {
-  const { user } = useUserStore()
+const Index = ({ accessToken }: { accessToken: string }) => {
+  const { user, setUser } = useUserStore()
+  useEffect(() => {
+    setUser(accessToken)
+  }, [])
   return (
     <div className="flex flex-col h-full">
       <Header />
@@ -20,7 +25,7 @@ export const getServerSideProps = async (
   context: GetServerSidePropsContext,
 ) => {
   try {
-    const { accessToken } = await authService.getRefreshTokenSSR(context)
+    const accessToken = await authService.getRefreshTokenSSR(context)
 
     return {
       props: {
