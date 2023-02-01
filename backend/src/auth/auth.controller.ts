@@ -1,5 +1,6 @@
 import { NextFunction, Request, Response } from 'express'
 import * as authService from './auth.service'
+import * as listCollectionService from '../listCollection/listCollection.service'
 import jwt from 'jsonwebtoken'
 import { JWTPayload } from '../types/jwt'
 
@@ -9,7 +10,12 @@ export const signup = async (
   next: NextFunction,
 ) => {
   try {
-    const createUser = await authService.signup(req.body)
+    const user = await authService.signup(req.body)
+
+    // create new list collection for the newly created user
+    const newListCollection = await listCollectionService.createListCollection({
+      id: user.id,
+    })
 
     return res.status(201).json({
       message: 'User succesfully created',

@@ -1,32 +1,34 @@
-import { Request, Response } from 'express'
+import { NextFunction, Request, Response } from 'express'
 import ListCollection from './listCollection.model'
 import * as listCollectionService from './listCollection.service'
 
 export const getListCollection = async (
-  req: Request<{ id: string }>,
+  req: Request,
   res: Response,
+  next: NextFunction,
 ) => {
   try {
     const lists = await listCollectionService.getListCollection({
-      id: parseInt(req.params.id),
+      userId: req.user?.id as string,
     })
     return res.status(200).json(lists)
   } catch (error: any) {
-    return res.json(error)
+    next(error)
   }
 }
 
 export const editListOrder = async (
-  req: Request<{ id: string }, {}, Pick<ListCollection, 'listOrder'>>,
+  req: Request<{}, {}, Pick<ListCollection, 'listOrder'>>,
   res: Response,
+  next: NextFunction,
 ) => {
   try {
     const list = await listCollectionService.editListOrder({
-      id: parseInt(req.params.id),
+      userId: req.user?.id as string,
       listOrder: req.body.listOrder,
     })
     return res.status(200).json(list)
   } catch (error) {
-    return res.json(error)
+    next(error)
   }
 }

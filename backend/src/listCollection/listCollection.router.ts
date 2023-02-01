@@ -5,10 +5,10 @@ import ListCollection from './listCollection.model'
 
 export const listCollectionRouter = express.Router()
 
-listCollectionRouter.get('/:id', listCollectionController.getListCollection)
+listCollectionRouter.get('/', listCollectionController.getListCollection)
 
 listCollectionRouter.patch(
-  '/:id',
+  '/',
   validateRequest({ body: ListCollection.pick({ listOrder: true }) }),
   listCollectionController.editListOrder,
 )

@@ -1,9 +1,20 @@
 import { db } from '../utils/db'
 
-export const getListCollection = async ({ id }: { id: number }) => {
+export const createListCollection = async ({ id }: { id: string }) =>
+  db.listCollection.create({
+    data: {
+      user: {
+        connect: {
+          id,
+        },
+      },
+    },
+  })
+
+export const getListCollection = async ({ userId }: { userId: string }) => {
   const listCollection = await db.listCollection.findUnique({
     where: {
-      id,
+      userId,
     },
     include: {
       lists: true,
@@ -14,15 +25,15 @@ export const getListCollection = async ({ id }: { id: number }) => {
 }
 
 export const editListOrder = async ({
-  id,
+  userId,
   listOrder,
 }: {
-  id: number
+  userId: string
   listOrder: number[]
 }) =>
   db.listCollection.update({
     where: {
-      id,
+      userId,
     },
     data: {
       listOrder,
