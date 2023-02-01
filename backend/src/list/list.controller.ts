@@ -1,5 +1,5 @@
 import { Request, Response } from 'express'
-import { DeleteListSchema, EditListSchema, PostListSchema } from './list.model'
+import { EditListSchema, PostListSchema } from './list.model'
 import * as listService from './list.service'
 
 export const createList = async (
@@ -8,7 +8,7 @@ export const createList = async (
 ) => {
   try {
     const list = await listService.createList({
-      listCollectionId: req.body.listCollectionId,
+      userId: req.user!.id,
     })
     return res.status(200).json(list)
   } catch (error) {
@@ -32,13 +32,13 @@ export const editList = async (
 }
 
 export const deleteList = async (
-  req: Request<{ id: string }, {}, DeleteListSchema>,
+  req: Request<{ id: string }>,
   res: Response,
 ) => {
   try {
     const list = await listService.deleteList({
       listId: parseInt(req.params.id),
-      listCollectionId: req.body.listCollectionId,
+      userId: req.user!.id,
     })
     return res.status(200).json(list)
   } catch (error) {

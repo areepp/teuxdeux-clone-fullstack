@@ -1,15 +1,11 @@
 import express from 'express'
 import validateRequest from '../middlewares/validateRequest'
 import * as listController from './list.controller'
-import { DeleteListSchema, EditListSchema, PostListSchema } from './list.model'
+import { EditListSchema, PostListSchema } from './list.model'
 
 export const listRouter = express.Router()
 
-listRouter.post(
-  '/',
-  validateRequest({ body: PostListSchema }),
-  listController.createList,
-)
+listRouter.post('/', listController.createList)
 
 listRouter.patch(
   '/:id',
@@ -19,10 +15,4 @@ listRouter.patch(
   listController.editList,
 )
 
-listRouter.delete(
-  '/:id',
-  validateRequest({
-    body: DeleteListSchema,
-  }),
-  listController.deleteList,
-)
+listRouter.delete('/:id', listController.deleteList)

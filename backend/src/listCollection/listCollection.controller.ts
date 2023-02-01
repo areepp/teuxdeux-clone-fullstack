@@ -9,7 +9,7 @@ export const getListCollection = async (
 ) => {
   try {
     const lists = await listCollectionService.getListCollection({
-      userId: req.user?.id as string,
+      userId: req.user!.id,
     })
     return res.status(200).json(lists)
   } catch (error: any) {
@@ -24,7 +24,7 @@ export const editListOrder = async (
 ) => {
   try {
     const list = await listCollectionService.editListOrder({
-      userId: req.user?.id as string,
+      userId: req.user!.id,
       listOrder: req.body.listOrder,
     })
     return res.status(200).json(list)

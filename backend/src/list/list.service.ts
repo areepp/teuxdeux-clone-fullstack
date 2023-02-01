@@ -3,9 +3,9 @@ import { db } from '../utils/db'
 import List from './list.model'
 
 export const createList = async ({
-  listCollectionId,
+  userId,
 }: {
-  listCollectionId: number
+  userId: string
 }): Promise<List> => {
   const newList = await db.list.create({
     data: {
@@ -15,7 +15,7 @@ export const createList = async ({
 
   const listCollection = await db.listCollection.update({
     where: {
-      id: listCollectionId,
+      userId,
     },
     data: {
       listOrder: {
@@ -52,10 +52,10 @@ export const editList = async ({
   })
 
 export const deleteList = async ({
-  listCollectionId,
+  userId,
   listId,
 }: {
-  listCollectionId: number
+  userId: string
   listId: number
 }): Promise<List> => {
   const deleteAllTodosWithIn = await db.list.update({
@@ -77,13 +77,13 @@ export const deleteList = async ({
 
   const { listOrder } = (await db.listCollection.findUnique({
     where: {
-      id: listCollectionId,
+      userId,
     },
   })) as ListCollection
 
   const listCollection = await db.listCollection.update({
     where: {
-      id: listCollectionId,
+      userId,
     },
     data: {
       listOrder: {
