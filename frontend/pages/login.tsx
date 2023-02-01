@@ -1,15 +1,12 @@
 import { GetServerSidePropsContext } from 'next'
 import Link from 'next/link'
 import { useRouter } from 'next/router'
-import nookies from 'nookies'
 import { useState } from 'react'
 import { SubmitHandler, useForm } from 'react-hook-form'
 import Input, { Inputs } from '@/components/Auth/Input'
 import * as authService from '@/lib/auth.service'
-import { adminAuth } from '@/lib/firebaseAdmin'
 import Button from '@/components/Auth/Button'
 import { useMutation } from 'react-query'
-import { useMyAuth } from '@/context/MyAuthContext'
 import useUserStore from '@/stores/user'
 
 const Login = () => {
@@ -102,7 +99,7 @@ export const getServerSideProps = async (
   context: GetServerSidePropsContext,
 ) => {
   try {
-    // user found in the cookies
+    // user found in the cookie
     await authService.getRefreshTokenSSR(context)
 
     context.res.writeHead(302, {
@@ -111,7 +108,7 @@ export const getServerSideProps = async (
     context.res.end()
     return { props: {} as never }
   } catch (err) {
-    // user not found in the cookies
+    // user not found in the cookie
     return { props: {} as never }
   }
 }

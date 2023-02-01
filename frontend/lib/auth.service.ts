@@ -52,7 +52,7 @@ export const getRefreshTokenSSR = async (
 // prettier-ignore
 export const logOut = async () =>  {
   try {
-  await axios.post('/auth/logout', {}, { withCredentials: true })
+    await axios.post('/auth/logout', {}, { withCredentials: true })
   } catch (err: any) {
     throw err.response.data
   }

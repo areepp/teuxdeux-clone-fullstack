@@ -1,9 +1,7 @@
 import Dashboard from '@/components/Dashboard'
 import Header from '@/components/Header'
-import { useMyAuth } from '@/context/MyAuthContext'
 import * as authService from '@/lib/auth.service'
 import useUserStore, { User } from '@/stores/user'
-import jwtDecode from 'jwt-decode'
 import { GetServerSidePropsContext } from 'next'
 import { useEffect } from 'react'
 
