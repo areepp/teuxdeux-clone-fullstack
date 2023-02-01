@@ -42,7 +42,7 @@ export const login = async ({ email, password }: AuthSchema) => {
 }
 
 export const userWithRefreshTokenExists = async (refreshToken: string) =>
-  db.user.findUnique({
+  db.user.findFirst({
     where: {
       refreshToken,
     },
@@ -55,7 +55,7 @@ export const editUser = async ({
   id: string
   refreshToken: string
 }) =>
-  db.user.update({
+  await db.user.update({
     where: {
       id,
     },
