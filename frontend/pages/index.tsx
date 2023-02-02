@@ -13,8 +13,7 @@ const Index = ({ accessToken }: { accessToken: string }) => {
   return (
     <div className="flex flex-col h-full">
       <Header />
-      {/* <Dashboard /> */}
-      <p>{user ? user.email : 'nothing'}</p>
+      <Dashboard />
     </div>
   )
 }
@@ -23,11 +22,11 @@ export const getServerSideProps = async (
   context: GetServerSidePropsContext,
 ) => {
   try {
-    const accessToken = await authService.getRefreshTokenSSR(context)
+    const response = await authService.getRefreshTokenSSR(context)
 
     return {
       props: {
-        accessToken,
+        accessToken: response.data.accessToken,
       },
     }
   } catch (err: any) {

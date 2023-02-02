@@ -24,25 +24,25 @@ const Login = () => {
 
   const onSubmit: SubmitHandler<Inputs> = async (data) => {
     try {
-      const accessToken = await mutateAsync(data)
-      setUser(accessToken)
+      const response = await mutateAsync(data)
+      setUser(response.data.accessToken)
       router.push('/')
     } catch (error: any) {
-      setErrorMessage(error.message)
+      setErrorMessage(error.response.data.message)
     }
   }
 
-  const demoLogin = async () => {
-    try {
-      await mutateAsync({
-        email: 'demo@test.com',
-        password: 'demogorgon',
-      })
-      router.push('/')
-    } catch (error: any) {
-      console.log(error)
-    }
-  }
+  // const demoLogin = async () => {
+  //   try {
+  //     await mutateAsync({
+  //       email: 'demo@test.com',
+  //       password: 'demogorgon',
+  //     })
+  //     router.push('/')
+  //   } catch (error: any) {
+  //     console.log(error)
+  //   }
+  // }
 
   return (
     <div className="w-screen h-screen flex flex-col items-center justify-center">
@@ -73,13 +73,13 @@ const Login = () => {
 
         <p className="mt-4 w-full text-center">or</p>
 
-        <Button
+        {/* <Button
           className="mt-4"
           text="Click here to log in using demo account"
           disabled={isLoading}
           type="submit"
           onClick={demoLogin}
-        />
+        /> */}
 
         {/* FOOTER */}
         <p className="mt-4">
