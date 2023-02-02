@@ -17,7 +17,11 @@ export const getListCollection = async ({ userId }: { userId: string }) => {
       userId,
     },
     include: {
-      lists: true,
+      lists: {
+        include: {
+          todos: true,
+        },
+      },
     },
   })
 
