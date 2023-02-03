@@ -40,8 +40,52 @@ export const editList = async ({
   id: number
   title?: string
   todoOrder?: number[]
-}) =>
-  db.list.update({
+}) => {
+  if (todoOrder) {
+    const listBefore = await db.list.findUnique({
+      where: { id },
+      include: {
+        todos: true,
+      },
+    })
+
+    const todoIdsBefore = listBefore!.todos.map((todo) => todo.id)
+
+    // got a new todo from another column
+    if (todoIdsBefore.length < todoOrder.length) {
+      await db.list.update({
+        where: {
+          id,
+        },
+        data: {
+          todos: {
+            connect: {
+              id: todoOrder.filter((id) => todoIdsBefore.indexOf(id) < 0)[0],
+            },
+          },
+        },
+      })
+    }
+
+    // a todo moved out of the list
+    if (todoIdsBefore.length > todoOrder.length) {
+      await db.list.update({
+        where: {
+          id,
+        },
+        data: {
+          todos: {
+            disconnect: {
+              id: todoIdsBefore.filter((id) => todoOrder.indexOf(id) < 0)[0],
+            },
+          },
+        },
+      })
+    }
+
+    // do nothing when todo is reordered within the same list, just update the todoOrder
+  }
+  return db.list.update({
     where: {
       id,
     },
@@ -50,6 +94,7 @@ export const editList = async ({
       todoOrder,
     },
   })
+}
 
 export const deleteList = async ({
   userId,
