@@ -51,7 +51,7 @@ export const editList = async ({
 
     const todoIdsBefore = listBefore!.todos.map((todo) => todo.id)
 
-    // got a new todo from another column
+    // got a new todo from another list, connect it
     if (todoIdsBefore.length < todoOrder.length) {
       await db.list.update({
         where: {
@@ -67,7 +67,7 @@ export const editList = async ({
       })
     }
 
-    // a todo moved out of the list
+    // a todo moved out of the list, disconnect it
     if (todoIdsBefore.length > todoOrder.length) {
       await db.list.update({
         where: {
