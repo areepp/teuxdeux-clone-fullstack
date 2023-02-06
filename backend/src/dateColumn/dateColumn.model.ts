@@ -8,7 +8,7 @@ const DateColumn = z.object({
 })
 
 export const GetDateColumnsSchema = z.object({
-  ids: z.array(z.string()),
+  ids: z.string(),
 })
 
 export const EditTodoOrderSchema = z.object({

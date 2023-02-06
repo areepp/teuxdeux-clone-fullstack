@@ -11,7 +11,7 @@ export const dateColumnRouter = express.Router()
 
 dateColumnRouter.get(
   '/',
-  validateRequest({ body: GetDateColumnsSchema }),
+  validateRequest({ query: GetDateColumnsSchema }), // this will in the form of date;date;date;date
   dateColumnController.getDateColumns,
 )
 

@@ -4,12 +4,13 @@ import { EditTodoOrderSchema, GetDateColumnsSchema } from './dateColumn.model'
 import * as dateColumnService from './dateColumn.service'
 
 export const getDateColumns = async (
-  req: Request<{}, {}, GetDateColumnsSchema>,
+  req: Request<{}, {}, {}, { ids: string }>,
   res: Response,
 ) => {
+  const ids = req.query.ids.split(';')
   try {
     const dateColumns = await dateColumnService.getDateColumns({
-      ids: req.body.ids,
+      ids,
     })
     return res.status(200).json(dateColumns)
   } catch (error) {
