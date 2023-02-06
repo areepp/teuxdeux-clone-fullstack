@@ -1,4 +1,4 @@
-import { ITodo } from '@/stores/todos'
+import { ITodo } from '@/lib/todo.service'
 import clsx from 'clsx'
 import {
   DraggableProvided,
@@ -15,7 +15,7 @@ export const getRenderClone = (todos: ITodo[] | null) =>
     rubric: DraggableRubric,
   ) => {
     const item = todos?.filter(
-      (todo: ITodo) => todo.id === rubric.draggableId,
+      (todo: ITodo) => todo.id.toString() === rubric.draggableId,
     )[0]
 
     const { innerRef, draggableProps, dragHandleProps } = provided

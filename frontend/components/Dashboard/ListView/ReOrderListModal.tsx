@@ -1,16 +1,28 @@
 import { Draggable, Droppable } from 'react-beautiful-dnd'
 import { HiOutlineX } from 'react-icons/hi'
-import useListStore, { IList } from '@/stores/lists'
+import useListStore from '@/stores/lists'
 import MyOutsideClickHandler from '@/components/Common/MyOutsideClickHandler'
+import { useQuery, useQueryClient } from 'react-query'
+import * as listCollectionService from '@/lib/listCollection.service'
+import useAxiosPrivate from '@/hooks/useAxiosPrivate'
+import { IList } from '@/lib/list.service'
 
 interface Props {
   setIsReOrderModalVisible: React.Dispatch<React.SetStateAction<boolean>>
 }
 
 const ReOrderListModal = ({ setIsReOrderModalVisible }: Props) => {
-  const { lists, listOrder } = useListStore()
-  const orderedLists = listOrder.map(
-    (id) => lists.find((list) => list.id === id) as IList,
+  const axiosPrivate = useAxiosPrivate()
+  const { isLoading, isError, data } = useQuery('listCollection', () =>
+    listCollectionService.getListCollection(axiosPrivate),
+  )
+
+  if (isLoading) return <div>loading</div>
+
+  if (isError || !data) return <div>error</div>
+
+  const orderedLists = data?.listOrder.map(
+    (id) => data.lists.find((list) => list.id === id) as IList,
   )
 
   return (
@@ -45,7 +57,7 @@ const ReOrderListModal = ({ setIsReOrderModalVisible }: Props) => {
                   orderedLists.map((list, index) => (
                     <Draggable
                       key={list.id}
-                      draggableId={list.id}
+                      draggableId={list.id.toString()}
                       index={index}
                     >
                       {(draggableProvided) => (

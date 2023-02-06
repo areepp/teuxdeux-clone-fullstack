@@ -6,6 +6,7 @@ import { onDragEndLogic } from '@/helper/onDragEndLogic'
 import * as dayService from '@/lib/day.service'
 import * as listService from '@/lib/list.service'
 import * as todoService from '@/lib/todo.service'
+import * as listCollectionService from '@/lib/listCollection.service'
 import useListStore, { IList } from '@/stores/lists'
 import useTodoStore, { ITodo } from '@/stores/todos'
 import useDayStore from '@/stores/days'
@@ -14,6 +15,8 @@ import { IDayColumn } from '@/types/IDayColumn'
 import { useAuth } from '../AuthContext'
 import ListView from './ListView'
 import Setting from './Common/Setting'
+import useAxiosPrivate from '@/hooks/useAxiosPrivate'
+import { useMutation, useQuery, useQueryClient } from 'react-query'
 
 const Dashboard = () => {
   const { user } = useAuth()
@@ -21,48 +24,69 @@ const Dashboard = () => {
   const columnStore = useDayStore()
   const listStore = useListStore()
   const settingStore = useSettingStore()
+  const axiosPrivate = useAxiosPrivate()
+  const queryClient = useQueryClient()
 
-  const syncDayColumns = async (dayColumns: IDayColumn[]) => {
-    const calendarResponse = await dayService.getDayColumnsByIds(
-      user!.uid,
-      dayColumns.map((day) => day.id),
-    )
-    const columnFromFirestore = calendarResponse.flat() as IDayColumn[]
-    columnStore.syncColumns(columnFromFirestore)
-  }
+  const {
+    isLoading,
+    isError,
+    data: listCollection,
+  } = useQuery('listCollection', () =>
+    listCollectionService.getListCollection(axiosPrivate),
+  )
+
+  const { mutate: editListOrder } = useMutation(
+    (data: number[]) =>
+      listCollectionService.editListOrder(axiosPrivate, { listOrder: data }),
+    {
+      onSuccess: () => queryClient.invalidateQueries('listCollection'),
+    },
+  )
+
+  const { mutate: editList } = useMutation(
+    (data: { listId: number; todoOrder: number[] }) =>
+      listService.editList(axiosPrivate, data),
+    {
+      onSuccess: () => queryClient.invalidateQueries('listCollection'),
+    },
+  )
+
+  // const syncDayColumns = async (dayColumns: IDayColumn[]) => {
+  //   const calendarResponse = await dayService.getDayColumnsByIds(
+  //     user!.uid,
+  //     dayColumns.map((day) => day.id),
+  //   )
+  //   const columnFromFirestore = calendarResponse.flat() as IDayColumn[]
+  //   columnStore.syncColumns(columnFromFirestore)
+  // }
 
   useEffect(() => {
-    async function fetchTodos() {
-      const todoResponse = await todoService.getAllTodos(user!.uid)
-
-      const todosMapped = todoResponse.docs.map((doc) => ({
-        ...doc.data(),
-        id: doc.id,
-      }))
-      todoStore.setTodos(todosMapped as ITodo[])
-    }
-
-    async function syncListToFirebase() {
-      const [listResponse, listOrderResponse] = await Promise.all([
-        listService.getLists(user!.uid),
-        listService.getListOrder(user!.uid),
-      ])
-      const listMapped = listResponse.docs.map((doc) => ({
-        ...doc.data(),
-        id: doc.id,
-      }))
-
-      if (listMapped.length === 0 || !listOrderResponse.data()) {
-        return
-      }
-
-      listStore.setLists(listMapped as IList[])
-      listStore.setListOrder(listOrderResponse!.data()!.order)
-    }
-    fetchTodos()
-    syncListToFirebase()
-    syncDayColumns(getInitialColumns())
-
+    // async function fetchTodos() {
+    //   const todoResponse = await todoService.getAllTodos(user!.uid)
+    //   const todosMapped = todoResponse.docs.map((doc) => ({
+    //     ...doc.data(),
+    //     id: doc.id,
+    //   }))
+    //   todoStore.setTodos(todosMapped as ITodo[])
+    // }
+    // async function syncListToFirebase() {
+    //   const [listResponse, listOrderResponse] = await Promise.all([
+    //     listService.getLists(user!.uid),
+    //     listService.getListOrder(user!.uid),
+    //   ])
+    //   const listMapped = listResponse.docs.map((doc) => ({
+    //     ...doc.data(),
+    //     id: doc.id,
+    //   }))
+    //   if (listMapped.length === 0 || !listOrderResponse.data()) {
+    //     return
+    //   }
+    //   listStore.setLists(listMapped as IList[])
+    //   listStore.setListOrder(listOrderResponse!.data()!.order)
+    // }
+    // fetchTodos()
+    // syncListToFirebase()
+    // syncDayColumns(getInitialColumns())
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
@@ -79,14 +103,22 @@ const Dashboard = () => {
   }, [settingStore])
 
   const onDragEnd = async (result: DropResult) => {
-    onDragEndLogic(result, user, listStore, columnStore)
+    onDragEndLogic({
+      result,
+      user,
+      listStore,
+      columnStore,
+      listCollection: listCollection!,
+      editListOrder,
+      editList,
+    })
   }
 
   return (
     <main className="flex-auto flex flex-col">
       <Setting />
       <DragDropContext onDragEnd={onDragEnd}>
-        <CalendarView syncDayColumns={syncDayColumns} />
+        {/* <CalendarView syncDayColumns={syncDayColumns} /> */}
         <ListView />
       </DragDropContext>
     </main>

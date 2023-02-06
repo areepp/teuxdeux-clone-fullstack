@@ -1,20 +1,25 @@
-import { useAuth } from '@/components/AuthContext'
 import MyOutsideClickHandler from '@/components/Common/MyOutsideClickHandler'
+import useAxiosPrivate from '@/hooks/useAxiosPrivate'
 import * as listService from '@/lib/list.service'
-import * as todoService from '@/lib/todo.service'
-import useListStore from '@/stores/lists'
 import { useState } from 'react'
 import { TbDotsVertical } from 'react-icons/tb'
 import { TfiTrash } from 'react-icons/tfi'
+import { useMutation, useQueryClient } from 'react-query'
 
 interface Props {
-  listId: string
+  listId: number
 }
 
 const ListOption = ({ listId }: Props) => {
-  const listStore = useListStore()
-  const { user } = useAuth()
+  const queryClient = useQueryClient()
   const [isOptionOpen, setIsOptionOpen] = useState(false)
+  const axiosPrivate = useAxiosPrivate()
+  const { mutate } = useMutation(
+    () => listService.deleteList(axiosPrivate, { listId }),
+    {
+      onSuccess: () => queryClient.invalidateQueries('listCollection'),
+    },
+  )
 
   const handleDeleteList = async () => {
     // eslint-disable-next-line no-alert
@@ -22,18 +27,7 @@ const ListOption = ({ listId }: Props) => {
       'Eits bentar... Are you sure about this?\n\nDeleting this list will also delete all to-dos within it.',
     )
     if (confirmWindow) {
-      listStore.deleteList(listId)
-      const todosInList = listStore.lists.find(
-        (list) => list.id === listId,
-      )!.order
-
-      Promise.all([
-        listService.deleteList(user!.uid, listId),
-        listService.deleteFromListOrder(user!.uid, listId),
-        todoService.deleteMultipleTodos(user!.uid, todosInList),
-      ])
-
-      return 'deletion succesful'
+      return mutate()
     }
     return undefined
   }

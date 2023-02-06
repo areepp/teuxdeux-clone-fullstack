@@ -10,8 +10,16 @@ import {
   setDoc,
   updateDoc,
 } from 'firebase/firestore'
-import { IList } from '@/stores/lists'
 import { db } from './firebaseClient'
+import { AxiosInstance } from 'axios'
+import { ITodo } from './todo.service'
+
+export interface IList {
+  id: number
+  title: string
+  todoOrder: number[]
+  todos: ITodo[]
+}
 
 const getListCollectionRef = (userId: string) =>
   collection(db, 'users', userId, 'lists', 'listsCollection', 'collection')
@@ -28,17 +36,22 @@ export const getLists = async (userId: string) =>
 export const getListOrder = async (userId: string) =>
   getDoc(getListOrderDocRef(userId))
 
-export const addList = async (userId: string) =>
-  addDoc(getListCollectionRef(userId), { title: '', order: [] })
+export const createList = async (axiosPrivate: AxiosInstance) =>
+  axiosPrivate.post('/lists')
 
-export const deleteList = async (userId: string, deletedId: string) =>
-  deleteDoc(getListDocRef(userId, deletedId))
+export const deleteList = async (
+  axiosPrivate: AxiosInstance,
+  { listId }: { listId: number },
+) => axiosPrivate.delete(`/lists/${listId}`)
 
-export const editListTitle = async (
-  userId: string,
-  id: string,
-  newData: Pick<IList, 'title'>,
-) => updateDoc(getListDocRef(userId, id), newData)
+export const editList = async (
+  axiosPrivate: AxiosInstance,
+  {
+    listId,
+    title,
+    todoOrder,
+  }: { listId: number; title?: string; todoOrder?: number[] },
+) => axiosPrivate.patch(`/lists/${listId}`, { title, todoOrder })
 
 export const addToListOrder = async (userId: string, listId: string) =>
   setDoc(

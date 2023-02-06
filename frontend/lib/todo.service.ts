@@ -1,3 +1,4 @@
+import { AxiosInstance } from 'axios'
 import {
   collection,
   doc,
@@ -10,8 +11,13 @@ import {
   writeBatch,
   setDoc,
 } from 'firebase/firestore'
-import { ITodo } from '@/stores/todos'
 import { db } from './firebaseClient'
+
+export interface ITodo {
+  id: number
+  text: string
+  checked: boolean
+}
 
 const getTodoCollectionRef = (userId: string) =>
   collection(db, 'users', userId, 'todos')
@@ -31,13 +37,30 @@ export const getColumnTodos = (userId: string, columnTodosIds: string[]) => {
 }
 
 export const addTodo = async (
-  userId: string,
-  newTodoId: string,
-  newTodo: Omit<ITodo, 'id'>,
-) => setDoc(getTodoDocRef(userId, newTodoId), newTodo)
+  axiosPrivate: AxiosInstance,
+  body: { text: string; listId?: number; dateColumnId?: string },
+) => axiosPrivate.post('/todos', body)
 
-export const deleteTodo = async (userId: string, todoId: string) =>
-  deleteDoc(getTodoDocRef(userId, todoId))
+export const deleteTodo = async (
+  axiosPrivate: AxiosInstance,
+  {
+    todoId,
+    listId,
+    dateColumnId,
+  }: { todoId: number; listId?: number; dateColumnId?: string },
+) =>
+  axiosPrivate.delete(`/todos/${todoId}`, {
+    data: { listId, dateColumnId },
+  })
+
+export const editTodo = async (
+  axiosPrivate: AxiosInstance,
+  {
+    todoId,
+    text,
+    checked,
+  }: { todoId: string; text?: string; checked?: boolean },
+) => axiosPrivate.patch(`/todos/${todoId}`, { text, checked })
 
 export const deleteMultipleTodos = async (
   userId: string,

@@ -1,50 +1,54 @@
 import { useState } from 'react'
 import { Droppable } from 'react-beautiful-dnd'
-import { v4 as uuidv4 } from 'uuid'
-import { useAuth } from '@/components/AuthContext'
-import * as listService from '@/lib/list.service'
 import * as todoService from '@/lib/todo.service'
-import useListStore, { IList } from '@/stores/lists'
-import useTodoStore, { ITodo } from '@/stores/todos'
 import TodoItem from '../Common/TodoItem'
 import { getRenderClone } from '../Common/getRenderClone'
 import ListOption from './ListOption'
+import * as listService from '@/lib/list.service'
+import { ITodo } from '@/lib/todo.service'
+import { useMutation, useQueryClient } from 'react-query'
+import useAxiosPrivate from '@/hooks/useAxiosPrivate'
 
 interface Props {
-  list: IList
+  list: listService.IList
   todos: ITodo[] | null
 }
 
 const ListColumn = ({ todos, list }: Props) => {
-  const { user } = useAuth()
-  const listStore = useListStore()
-  const todoStore = useTodoStore()
   const [newTodoInputValue, setNewTodoInputValue] = useState<string>('')
+  const [listTitle, setListTitle] = useState(list.title)
+  const queryClient = useQueryClient()
+  const axiosPrivate = useAxiosPrivate()
+
+  const { mutate: addTodoMutation } = useMutation(
+    () =>
+      todoService.addTodo(axiosPrivate, {
+        text: newTodoInputValue,
+        listId: list.id,
+      }),
+    { onSuccess: () => queryClient.invalidateQueries('listCollection') },
+  )
+
+  const { mutate: editListMutation } = useMutation(
+    () =>
+      listService.editList(axiosPrivate, { listId: list.id, title: listTitle }),
+    {
+      onSuccess: () => queryClient.invalidateQueries('listCollection'),
+    },
+  )
+
   const renderClone = getRenderClone(todos)
-  // renderClone allows to move todo item to other parent
-  // (CALENDAR VIEW) while maintaining the desired drag behavior
+  // renderClone allows to move todo item to another parent container (EX: LIST COLUMN -> DATE COLUMN)
+  // while maintaining the desired drag behavior
 
   const handleAddTodo = async () => {
     setNewTodoInputValue('')
-    const newTodoId = uuidv4()
-    listStore.pushToListOrder(list.id, newTodoId)
-    todoStore.pushTodo({
-      id: newTodoId,
-      text: newTodoInputValue,
-      checked: false,
-    })
-    Promise.all([
-      todoService.addTodo(user!.uid, newTodoId, {
-        text: newTodoInputValue,
-        checked: false,
-      }),
-      listService.addTodoToList(user!.uid, list.id, newTodoId),
-    ])
+    addTodoMutation()
   }
 
   const handleKeyDown = async (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Enter') {
-      await handleAddTodo()
+      handleAddTodo()
     }
   }
 
@@ -52,7 +56,7 @@ const ListColumn = ({ todos, list }: Props) => {
     if (e.target.value === '') {
       return
     }
-    await handleAddTodo()
+    handleAddTodo()
   }
 
   return (
@@ -64,12 +68,9 @@ const ListColumn = ({ todos, list }: Props) => {
       {/* TITLE */}
       <input
         type="text"
-        value={list.title}
-        onChange={(e) => listStore.setListTitle(list.id, e.target.value)}
-        onBlur={async () =>
-          listService.editListTitle(user!.uid, list.id, {
-            title: list.title,
-          })} // prettier-ignore
+        value={listTitle}
+        onChange={(e) => setListTitle(e.target.value)}
+        onBlur={() => editListMutation()} // prettier-ignore
         className="flex items-center mx-auto bg-inherit font-gothic text-center uppercase text-6xl md:text-4xl focus:outline-none hover:bg-stone-300 transition-all w-full"
       />
 
