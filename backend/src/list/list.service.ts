@@ -49,10 +49,11 @@ export const editList = async ({
       },
     })
 
-    const todoIdsBefore = listBefore!.todos.map((todo) => todo.id)
+    const todoIdsBefore = listBefore?.todos.map((todo) => todo.id)
+    const todoIdsLengthBefore = todoIdsBefore?.length ?? 0
 
     // got a new todo from another list, connect it
-    if (todoIdsBefore.length < todoOrder.length) {
+    if (todoIdsLengthBefore < todoOrder.length) {
       await db.list.update({
         where: {
           id,
@@ -60,7 +61,7 @@ export const editList = async ({
         data: {
           todos: {
             connect: {
-              id: todoOrder.filter((id) => todoIdsBefore.indexOf(id) < 0)[0],
+              id: todoOrder.filter((id) => todoIdsBefore!.indexOf(id) < 0)[0],
             },
           },
         },
@@ -68,7 +69,7 @@ export const editList = async ({
     }
 
     // a todo moved out of the list, disconnect it
-    if (todoIdsBefore.length > todoOrder.length) {
+    if (todoIdsLengthBefore > todoOrder.length) {
       await db.list.update({
         where: {
           id,
@@ -76,7 +77,7 @@ export const editList = async ({
         data: {
           todos: {
             disconnect: {
-              id: todoIdsBefore.filter((id) => todoOrder.indexOf(id) < 0)[0],
+              id: todoIdsBefore!.filter((id) => todoOrder.indexOf(id) < 0)[0],
             },
           },
         },
