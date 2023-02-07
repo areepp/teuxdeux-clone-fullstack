@@ -10,18 +10,16 @@ interface Props {
   item: todoService.ITodo
   index: number
   colId: number | string
-  childOf: 'calendar' | 'list'
+  parent: 'dateColumn' | 'listCollection'
 }
 
-const TodoItem = ({ item, index, colId, childOf }: Props) => {
+const TodoItem = ({ item, index, colId, parent }: Props) => {
   const [isEditing, setIsEditing] = useState(false)
   const editTodoInputRef = useRef<HTMLInputElement>(null)
   const [isHovered, setIsHovered] = useState(false)
   const queryClient = useQueryClient()
   const axiosPrivate = useAxiosPrivate()
   const [todoText, setTodoText] = useState(item.text)
-
-  // TODO: make invalidate queries dynamic (listCollection or dateColumn)
 
   const { mutate: deleteTodoFromList } = useMutation(
     () =>
@@ -30,7 +28,18 @@ const TodoItem = ({ item, index, colId, childOf }: Props) => {
         listId: colId as number,
       }),
     {
-      onSuccess: () => queryClient.invalidateQueries('listCollection'),
+      onSuccess: () => queryClient.invalidateQueries(parent),
+    },
+  )
+
+  const { mutate: deleteTodoFromDateColumn } = useMutation(
+    () =>
+      todoService.deleteTodo(axiosPrivate, {
+        todoId: item.id,
+        dateColumnId: colId as string,
+      }),
+    {
+      onSuccess: () => queryClient.invalidateQueries(parent),
     },
   )
 
@@ -41,8 +50,7 @@ const TodoItem = ({ item, index, colId, childOf }: Props) => {
         checked: !item.checked,
       }),
     {
-      onSuccess: () =>
-        queryClient.invalidateQueries({ queryKey: ['listCollection'] }),
+      onSuccess: () => queryClient.invalidateQueries(parent),
     },
   )
 
@@ -53,7 +61,7 @@ const TodoItem = ({ item, index, colId, childOf }: Props) => {
         text: todoText,
       }),
     {
-      onSuccess: () => queryClient.invalidateQueries('listCollection'),
+      onSuccess: () => queryClient.invalidateQueries(parent),
     },
   )
 
@@ -62,8 +70,8 @@ const TodoItem = ({ item, index, colId, childOf }: Props) => {
   }, [isEditing])
 
   const handleDeleteTodo = async () => {
-    if (childOf === 'calendar') {
-      // dayStore.deleteTodoFromColumn(colId, item.id)
+    if (parent === 'dateColumn') {
+      deleteTodoFromDateColumn()
     } else {
       deleteTodoFromList()
     }
