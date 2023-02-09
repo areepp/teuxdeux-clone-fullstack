@@ -1,6 +1,6 @@
-import { db } from '../../utils/db'
-import { AuthSchema } from './auth.model'
 import bcrypt from 'bcryptjs'
+import db from '../../utils/db'
+import { AuthSchema } from './auth.model'
 import { ResponseError } from '../../types/Error'
 
 export const signup = async ({ email, password }: AuthSchema) => {
@@ -55,7 +55,7 @@ export const editUser = async ({
   id: string
   refreshToken: string
 }) =>
-  await db.user.update({
+  db.user.update({
     where: {
       id,
     },

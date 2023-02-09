@@ -1,5 +1,5 @@
 import ListCollection from '../listCollection/listCollection.model'
-import { db } from '../../utils/db'
+import db from '../../utils/db'
 import List from './list.model'
 
 export const createList = async ({
@@ -13,7 +13,7 @@ export const createList = async ({
     },
   })
 
-  const listCollection = await db.listCollection.update({
+  await db.listCollection.update({
     where: {
       userId,
     },
@@ -59,7 +59,7 @@ export const editList = async ({
           todos: {
             connect: {
               id: todoOrder.filter(
-                (id) => listBefore!.todoOrder.indexOf(id) < 0,
+                (el) => listBefore!.todoOrder.indexOf(el) < 0,
               )[0],
             },
           },
@@ -77,7 +77,7 @@ export const editList = async ({
           todos: {
             disconnect: {
               id: listBefore!.todoOrder.filter(
-                (id) => todoOrder.indexOf(id) < 0,
+                (el) => todoOrder.indexOf(el) < 0,
               )[0],
             },
           },
@@ -105,7 +105,7 @@ export const deleteList = async ({
   userId: string
   listId: number
 }): Promise<List> => {
-  const deleteAllTodosWithIn = await db.list.update({
+  await db.list.update({
     where: {
       id: listId,
     },
@@ -128,7 +128,7 @@ export const deleteList = async ({
     },
   })) as ListCollection
 
-  const listCollection = await db.listCollection.update({
+  await db.listCollection.update({
     where: {
       userId,
     },

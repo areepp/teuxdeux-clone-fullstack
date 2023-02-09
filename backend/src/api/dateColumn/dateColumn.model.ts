@@ -1,3 +1,4 @@
+/* eslint-disable no-redeclare */
 import { z } from 'zod'
 import Todo from '../todo/todo.model'
 

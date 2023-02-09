@@ -1,3 +1,4 @@
+/* eslint-disable no-redeclare */
 import { z } from 'zod'
 
 const List = z.object({

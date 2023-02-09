@@ -3,8 +3,8 @@ import jwt from 'jsonwebtoken'
 import User from '../api/auth/auth.model'
 import { JWTPayload } from '../types/jwt'
 
-export const verifyJWT = (req: Request, res: Response, next: NextFunction) => {
-  const authHeader = req.headers['authorization']
+const verifyJWT = (req: Request, res: Response, next: NextFunction) => {
+  const authHeader = req.headers.authorization
   if (!authHeader) {
     res.status(401)
     throw new Error('user unauthorized')
@@ -22,3 +22,5 @@ export const verifyJWT = (req: Request, res: Response, next: NextFunction) => {
     throw new Error('user unauthorized')
   }
 }
+
+export default verifyJWT

@@ -1,17 +1,18 @@
 import * as dotenv from 'dotenv'
-dotenv.config()
 import express from 'express'
 import cors from 'cors'
 import cookieParser from 'cookie-parser'
-import { todoRouter } from './api/todo/todo.router'
-import { listCollectionRouter } from './api/listCollection/listCollection.router'
-import { listRouter } from './api/list/list.router'
-import { dateColumnRouter } from './api/dateColumn/dateColumn.router'
-import { authRouter } from './api/auth/auth.router'
-import { errorHandler } from './middlewares/errorHandler'
-import { verifyJWT } from './middlewares/verifyJWT'
-import { credentials } from './middlewares/credentials'
-import { corsOptions } from './utils/corsOptions'
+import todoRouter from './api/todo/todo.router'
+import listCollectionRouter from './api/listCollection/listCollection.router'
+import listRouter from './api/list/list.router'
+import dateColumnRouter from './api/dateColumn/dateColumn.router'
+import authRouter from './api/auth/auth.router'
+import errorHandler from './middlewares/errorHandler'
+import verifyJWT from './middlewares/verifyJWT'
+import credentials from './middlewares/credentials'
+import corsOptions from './utils/corsOptions'
+
+dotenv.config()
 
 const app = express()
 
@@ -32,5 +33,6 @@ app.use('/api/date-columns', dateColumnRouter)
 app.use(errorHandler)
 
 app.listen(5000, () => {
+  // eslint-disable-next-line no-console
   console.log('server is running on port 5000')
 })

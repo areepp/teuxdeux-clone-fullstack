@@ -1,14 +1,11 @@
-import { NextFunction, Request, Response } from 'express'
+import { Request, Response } from 'express'
 
-export const errorHandler = (
-  err: Error,
-  req: Request,
-  res: Response,
-  next: NextFunction,
-) => {
+const errorHandler = (err: Error, req: Request, res: Response) => {
   const statusCode = res.statusCode !== 200 ? res.statusCode : 500
   res.status(statusCode)
   res.json({
     message: err.message,
   })
 }
+
+export default errorHandler

@@ -1,11 +1,10 @@
 import List from '../list/list.model'
 import { DateColumn } from '../../types/DateColumn'
-import { db } from '../../utils/db'
+import db from '../../utils/db'
 import Todo from './todo.model'
 
 export const getTodos = async (): Promise<Todo[]> => db.todo.findMany()
 
-// TODO: Make Id required
 export const addTodo = async ({
   text,
   listId,
@@ -22,7 +21,7 @@ export const addTodo = async ({
   })
 
   if (listId) {
-    const updatedList = await db.list.update({
+    await db.list.update({
       where: {
         id: listId,
       },
@@ -40,7 +39,7 @@ export const addTodo = async ({
   }
 
   if (dateColumnId) {
-    const updatedDateColumn = await db.dateColumn.upsert({
+    await db.dateColumn.upsert({
       where: {
         id: dateColumnId,
       },
@@ -104,13 +103,13 @@ export const deleteTodo = async ({
       },
     })) as List
 
-    const deleteTodoFromListOrder = await db.list.update({
+    await db.list.update({
       where: {
         id: listId,
       },
       data: {
         todoOrder: {
-          set: todoOrder.filter((id) => id !== deletedTodo.id),
+          set: todoOrder.filter((el) => el !== deletedTodo.id),
         },
       },
     })
@@ -123,13 +122,13 @@ export const deleteTodo = async ({
       },
     })) as DateColumn
 
-    const deleteTodoFromDateColumnOrder = await db.dateColumn.update({
+    await db.dateColumn.update({
       where: {
         id: dateColumnId,
       },
       data: {
         todoOrder: {
-          set: todoOrder.filter((id) => id !== deletedTodo.id),
+          set: todoOrder.filter((el) => el !== deletedTodo.id),
         },
       },
     })

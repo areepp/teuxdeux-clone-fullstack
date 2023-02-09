@@ -1,11 +1,12 @@
-import { Request, Response } from 'express'
-import { EditTodoOrderSchema, GetDateColumnsSchema } from './dateColumn.model'
+import { NextFunction, Request, Response } from 'express'
+import { EditTodoOrderSchema } from './dateColumn.model'
 
 import * as dateColumnService from './dateColumn.service'
 
 export const getDateColumns = async (
   req: Request<{}, {}, {}, { ids: string }>,
   res: Response,
+  next: NextFunction,
 ) => {
   const ids = req.query.ids.split(';')
   try {
@@ -14,13 +15,14 @@ export const getDateColumns = async (
     })
     return res.status(200).json(dateColumns)
   } catch (error) {
-    return res.json(error)
+    return next(error)
   }
 }
 
 export const editTodoOrder = async (
   req: Request<{ id: string }, {}, EditTodoOrderSchema>,
   res: Response,
+  next: NextFunction,
 ) => {
   try {
     const dateColumn = await dateColumnService.editTodoOrder({
@@ -29,6 +31,6 @@ export const editTodoOrder = async (
     })
     return res.status(200).json(dateColumn)
   } catch (error) {
-    return res.json(error)
+    return next(error)
   }
 }

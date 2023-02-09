@@ -1,3 +1,4 @@
+/* eslint-disable no-redeclare */
 import { z } from 'zod'
 import List from '../list/list.model'
 

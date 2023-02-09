@@ -1,8 +1,8 @@
 import { NextFunction, Request, Response } from 'express'
-import * as authService from './auth.service'
-import * as listCollectionService from '../listCollection/listCollection.service'
 import jwt from 'jsonwebtoken'
 import { JWTPayload } from '../../types/jwt'
+import * as listCollectionService from '../listCollection/listCollection.service'
+import * as authService from './auth.service'
 
 export const signup = async (
   req: Request<{}, {}, { email: string; password: string }>,
@@ -13,7 +13,7 @@ export const signup = async (
     const user = await authService.signup(req.body)
 
     // create new list collection for the newly created user
-    const newListCollection = await listCollectionService.createListCollection({
+    await listCollectionService.createListCollection({
       id: user.id,
     })
 
@@ -36,7 +36,7 @@ export const login = async (
     const accessToken = jwt.sign(
       { userInfo: { id: user.id, email: user.email } },
       process.env.ACCESS_TOKEN_SECRET as string,
-      { expiresIn: '1y' }, // TODO: change this to 15m in production
+      { expiresIn: '15m' },
     )
 
     const refreshToken = jwt.sign(
@@ -45,7 +45,7 @@ export const login = async (
       { expiresIn: '1y' },
     )
 
-    const storeRefreshToken = await authService.editUser({
+    await authService.editUser({
       id: user.id,
       refreshToken,
     })
@@ -57,16 +57,12 @@ export const login = async (
 
     return res.json({ accessToken })
   } catch (error) {
-    next(error)
+    return next(error)
   }
 }
 
-export const logout = async (
-  req: Request,
-  res: Response,
-  next: NextFunction,
-) => {
-  const cookies = req.cookies
+export const logout = async (req: Request, res: Response) => {
+  const { cookies } = req
   if (!cookies?.jwt) return res.json('logged out')
 
   const refreshToken = cookies.jwt
@@ -77,7 +73,7 @@ export const logout = async (
     return res.json('logged out')
   }
 
-  const removeRefreshToken = await authService.editUser({
+  await authService.editUser({
     id: userFound.id,
     refreshToken: '',
   })
@@ -92,7 +88,7 @@ export const handleRefreshToken = async (
   next: NextFunction,
 ) => {
   try {
-    const cookies = req.cookies
+    const { cookies } = req
 
     if (!cookies?.jwt) {
       res.status(401)
@@ -120,11 +116,11 @@ export const handleRefreshToken = async (
     const accessToken = jwt.sign(
       { userInfo: { id: userFound.id, email: userFound.email } },
       process.env.ACCESS_TOKEN_SECRET as string,
-      { expiresIn: '1y' }, // TODO: change this to 15m in production
+      { expiresIn: '15m' },
     )
 
     return res.json({ accessToken })
   } catch (err) {
-    next(err)
+    return next(err)
   }
 }

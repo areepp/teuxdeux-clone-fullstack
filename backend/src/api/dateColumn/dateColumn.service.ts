@@ -1,4 +1,4 @@
-import { db } from '../../utils/db'
+import db from '../../utils/db'
 
 export const getDateColumns = async ({ ids }: { ids: string[] }) =>
   db.dateColumn.findMany({
@@ -35,7 +35,7 @@ export const editTodoOrder = async ({
           todos: {
             connect: {
               id: todoOrder.filter(
-                (id) => dateColumnBefore!.todoOrder.indexOf(id) < 0,
+                (el) => dateColumnBefore!.todoOrder.indexOf(el) < 0,
               )[0],
             },
           },
@@ -53,7 +53,7 @@ export const editTodoOrder = async ({
           todos: {
             disconnect: {
               id: dateColumnBefore!.todoOrder.filter(
-                (id) => todoOrder.indexOf(id) < 0,
+                (el) => todoOrder.indexOf(el) < 0,
               )[0],
             },
           },

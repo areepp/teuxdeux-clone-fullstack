@@ -1,1 +1,3 @@
-export const ALLOWED_ORIGINS = ['http://localhost:3000']
+const ALLOWED_ORIGINS = ['http://localhost:3000']
+
+export default ALLOWED_ORIGINS

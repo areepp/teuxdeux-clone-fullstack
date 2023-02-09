@@ -1,9 +1,9 @@
 import express from 'express'
-import * as authController from './auth.controller'
 import validateRequest from '../../middlewares/validateRequest'
+import * as authController from './auth.controller'
 import { AuthSchema } from './auth.model'
 
-export const authRouter = express.Router()
+const authRouter = express.Router()
 
 authRouter.post(
   '/signup',
@@ -20,3 +20,5 @@ authRouter.post(
 authRouter.post('/logout', authController.logout)
 
 authRouter.get('/refresh', authController.handleRefreshToken)
+
+export default authRouter

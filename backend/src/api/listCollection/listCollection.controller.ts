@@ -13,7 +13,7 @@ export const getListCollection = async (
     })
     return res.status(200).json(lists)
   } catch (error: any) {
-    next(error)
+    return next(error)
   }
 }
 
@@ -29,6 +29,6 @@ export const editListOrder = async (
     })
     return res.status(200).json(list)
   } catch (error) {
-    next(error)
+    return next(error)
   }
 }

@@ -7,27 +7,28 @@ interface RequestValidators {
   query?: AnyZodObject
 }
 
+// prettier-ignore
 const validateRequest =
   (validators: RequestValidators) =>
-  async (req: Request, res: Response, next: NextFunction) => {
-    try {
-      if (validators.body) {
-        req.body = await validators.body.parseAsync(req.body)
-      }
-      if (validators.params) {
-        req.params = await validators.params.parseAsync(req.params)
-      }
-      if (validators.query) {
-        req.query = await validators.query.parseAsync(req.query)
-      }
+    async (req: Request, res: Response, next: NextFunction) => {
+      try {
+        if (validators.body) {
+          req.body = await validators.body.parseAsync(req.body)
+        }
+        if (validators.params) {
+          req.params = await validators.params.parseAsync(req.params)
+        }
+        if (validators.query) {
+          req.query = await validators.query.parseAsync(req.query)
+        }
 
-      next()
-    } catch (error) {
-      if (error instanceof ZodError) {
-        return res.status(422).json(error)
+        return next()
+      } catch (error) {
+        if (error instanceof ZodError) {
+          return res.status(422).json(error)
+        }
+        return next(error)
       }
-      next(error)
     }
-  }
 
 export default validateRequest
