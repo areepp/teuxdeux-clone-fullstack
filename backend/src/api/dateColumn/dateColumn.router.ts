@@ -1,5 +1,5 @@
 import express from 'express'
-import validateRequest from '../middlewares/validateRequest'
+import validateRequest from '../../middlewares/validateRequest'
 import { EditTodoOrderSchema, GetDateColumnsSchema } from './dateColumn.model'
 import * as dateColumnController from './dateColumn.controller'
 

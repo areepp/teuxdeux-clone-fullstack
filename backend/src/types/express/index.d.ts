@@ -1,6 +1,6 @@
 import express from 'express'
 
-import User from '../../auth/auth.model'
+import User from '../../api/auth/auth.model'
 
 declare global {
   namespace Express {

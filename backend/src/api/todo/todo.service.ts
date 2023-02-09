@@ -1,6 +1,6 @@
 import List from '../list/list.model'
-import { DateColumn } from '../types/DateColumn'
-import { db } from '../utils/db'
+import { DateColumn } from '../../types/DateColumn'
+import { db } from '../../utils/db'
 import Todo from './todo.model'
 
 export const getTodos = async (): Promise<Todo[]> => db.todo.findMany()

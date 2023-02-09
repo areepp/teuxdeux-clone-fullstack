@@ -3,24 +3,15 @@ dotenv.config()
 import express from 'express'
 import cors from 'cors'
 import cookieParser from 'cookie-parser'
-import { todoRouter } from './todo/todo.router'
-import { listCollectionRouter } from './listCollection/listCollection.router'
-import { listRouter } from './list/list.router'
-import { dateColumnRouter } from './dateColumn/dateColumn.router'
-import { authRouter } from './auth/auth.router'
+import { todoRouter } from './api/todo/todo.router'
+import { listCollectionRouter } from './api/listCollection/listCollection.router'
+import { listRouter } from './api/list/list.router'
+import { dateColumnRouter } from './api/dateColumn/dateColumn.router'
+import { authRouter } from './api/auth/auth.router'
 import { errorHandler } from './middlewares/errorHandler'
-import User from './auth/auth.model'
 import { verifyJWT } from './middlewares/verifyJWT'
 import { credentials } from './middlewares/credentials'
 import { corsOptions } from './utils/corsOptions'
-
-declare global {
-  namespace Express {
-    interface Request {
-      context: User
-    }
-  }
-}
 
 const app = express()
 

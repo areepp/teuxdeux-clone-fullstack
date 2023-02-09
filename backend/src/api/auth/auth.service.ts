@@ -1,7 +1,7 @@
-import { db } from '.././utils/db'
+import { db } from '../../utils/db'
 import { AuthSchema } from './auth.model'
 import bcrypt from 'bcryptjs'
-import { ResponseError } from '../types/Error'
+import { ResponseError } from '../../types/Error'
 
 export const signup = async ({ email, password }: AuthSchema) => {
   const userExists = await db.user.count({ where: { email } })

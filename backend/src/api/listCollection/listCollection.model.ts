@@ -1,5 +1,5 @@
 import { z } from 'zod'
-import List from '../api/list/list.model'
+import List from '../list/list.model'
 
 const ListCollection = z.object({
   id: z.number(),

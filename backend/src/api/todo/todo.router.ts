@@ -1,5 +1,5 @@
 import express from 'express'
-import validateRequest from '../middlewares/validateRequest'
+import validateRequest from '../../middlewares/validateRequest'
 import * as todoController from './todo.controller'
 import Todo, {
   AddTodoSchema,

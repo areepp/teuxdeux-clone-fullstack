@@ -1,5 +1,5 @@
 import ListCollection from '../listCollection/listCollection.model'
-import { db } from '../utils/db'
+import { db } from '../../utils/db'
 import List from './list.model'
 
 export const createList = async ({

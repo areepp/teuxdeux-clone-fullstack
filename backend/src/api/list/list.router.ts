@@ -1,5 +1,5 @@
 import express from 'express'
-import validateRequest from '../middlewares/validateRequest'
+import validateRequest from '../../middlewares/validateRequest'
 import * as listController from './list.controller'
 import { EditListSchema, PostListSchema } from './list.model'
 

@@ -1,4 +1,4 @@
-import { db } from '../utils/db'
+import { db } from '../../utils/db'
 
 export const getDateColumns = async ({ ids }: { ids: string[] }) =>
   db.dateColumn.findMany({
