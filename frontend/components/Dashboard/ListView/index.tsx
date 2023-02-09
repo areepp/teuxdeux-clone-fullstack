@@ -12,13 +12,13 @@ import ReOrderListModal from './ReOrderListModal'
 import SlideProgress from './SlideProgress'
 import { useMutation, useQuery, useQueryClient } from 'react-query'
 import useAxiosPrivate from '@/hooks/useAxiosPrivate'
-import { IList } from '@/lib/list.service'
-import { ITodo } from '@/lib/todo.service'
+import { IList } from '@/types/IList'
+import { ITodo } from '@/types/ITodo'
 
 const ListView = () => {
   const settingStore = useSettingStore()
   const [swiperRef, setSwiperRef] = useState<SwiperCore>()
-  const [isListVisible, setIsListVisible] = useState(true)
+  const [isListVisible, setIsListVisible] = useState(false)
   const [isReOrderModalVisible, setIsReOrderModalVisible] = useState(false)
   const [activeSlideIndex, setActiveSlideIndex] = useState(0)
   const axiosPrivate = useAxiosPrivate()

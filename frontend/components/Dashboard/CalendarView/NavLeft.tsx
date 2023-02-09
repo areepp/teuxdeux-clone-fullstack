@@ -1,26 +1,31 @@
 import { IoHome } from 'react-icons/io5'
 import SwiperCore from 'swiper'
 import {
-  getInitialColumns,
+  getInitialDateColumns,
   transformDateSlashToDash,
 } from '@/helper/dateHelper'
-import useDayStore from '@/stores/days'
-import { IDayColumn } from '@/types/IDayColumn'
+import useDayStore from '@/stores/dateColumns'
 import Arrow from '../Common/Arrow'
+import useDateColumnQuery from '@/hooks/useDateColumnQuery'
+import { useQueryClient } from 'react-query'
 
 interface Props {
   navigationDisabled: boolean
   swiperRef: SwiperCore | undefined
-  syncDayColumns: (_localState: IDayColumn[]) => Promise<void>
 }
 
-const NavLeft = ({ navigationDisabled, swiperRef, syncDayColumns }: Props) => {
-  const columnStore = useDayStore()
+const NavLeft = ({ navigationDisabled, swiperRef }: Props) => {
+  const queryClient = useQueryClient()
+  const dateColumnStore = useDayStore()
+  const { refetch } = useDateColumnQuery(
+    getInitialDateColumns().map((col) => col.id),
+    { enabled: false },
+  )
 
   const handleHomeClick = async () => {
-    // need to replace '/' to '-' because firestore doesn't accept '/' as document name
+    // need to replace '/' to '-' (date format: month-day-year)
     const today = transformDateSlashToDash(new Date().toLocaleDateString())
-    const todayIndex = columnStore.dayColumns
+    const todayIndex = dateColumnStore.dateColumns
       .map((col) => col.id)
       .indexOf(today)
     if (todayIndex !== -1) {
@@ -28,8 +33,8 @@ const NavLeft = ({ navigationDisabled, swiperRef, syncDayColumns }: Props) => {
       swiperRef?.slideTo(todayIndex, 600)
     } else {
       // current day is not on the DOM tree -> out of reach
-      columnStore.setColumns(getInitialColumns())
-      await syncDayColumns(getInitialColumns())
+      dateColumnStore.setColumns(getInitialDateColumns())
+      refetch()
     }
   }
 

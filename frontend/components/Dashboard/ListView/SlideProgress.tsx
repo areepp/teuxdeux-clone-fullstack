@@ -1,4 +1,6 @@
-import useListStore from '@/stores/lists'
+import { useQuery } from 'react-query'
+import { getListCollection } from '@/lib/listCollection.service'
+import useAxiosPrivate from '@/hooks/useAxiosPrivate'
 import useSettingStore from '@/stores/settings'
 
 interface Props {
@@ -6,16 +8,20 @@ interface Props {
 }
 
 const SlideProgress = ({ activeSlideIndex }: Props) => {
-  const { listOrder } = useListStore()
+  const axiosPrivate = useAxiosPrivate()
   const settingStore = useSettingStore()
 
-  if (listOrder.length <= settingStore.slidesPerView) {
+  const { data } = useQuery('listCollection', () =>
+    getListCollection(axiosPrivate),
+  )
+
+  if (data!.listOrder.length <= settingStore.slidesPerView) {
     return null
   }
 
   return (
     <div className="flex gap-2">
-      {listOrder.map((list, index) => (
+      {data?.listOrder.map((list, index) => (
         <div
           key={list}
           className={`${

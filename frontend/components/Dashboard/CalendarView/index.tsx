@@ -2,33 +2,28 @@ import { useState } from 'react'
 import SwiperCore from 'swiper'
 import 'swiper/css'
 import { Swiper, SwiperSlide } from 'swiper/react'
-import { getNextFourDays, getPastFourDays } from '@/helper/dateHelper'
-import useDayStore from '@/stores/days'
-import { IDayColumn } from '@/types/IDayColumn'
+import { getNextFourDates, getPastFourDates } from '@/helper/dateHelper'
+import useDateColumnStore from '@/stores/dateColumns'
 import useSettingStore from '@/stores/settings'
-import useTodoStore, { ITodo } from '@/stores/todos'
-import DayColumn from './DayColumn'
+import DateColumn from './DateColumn'
 import NavLeft from './NavLeft'
 import NavRight from './NavRight'
+import useDateColumnQuery from '@/hooks/useDateColumnQuery'
+import { ITodo } from '@/types/ITodo'
 
-interface Props {
-  syncDayColumns: (_dayColumns: IDayColumn[]) => Promise<void>
-}
-
-const CalendarView = ({ syncDayColumns }: Props) => {
-  const columnStore = useDayStore()
-  const todoStore = useTodoStore()
+const CalendarView = () => {
+  const dateColumnStore = useDateColumnStore()
   const settingStore = useSettingStore()
   const [swiperRef, setSwiperRef] = useState<SwiperCore>()
   const [navigationDisabled, setNavigationDisabled] = useState(false)
 
+  const { refetch } = useDateColumnQuery(
+    dateColumnStore.dateColumns.map((col) => col.id),
+  )
+
   return (
     <section className="relative bg-white flex-grow min-h-[500px] pt-12 md:pt-4 md:flex">
-      <NavLeft
-        swiperRef={swiperRef}
-        navigationDisabled={navigationDisabled}
-        syncDayColumns={syncDayColumns}
-      />
+      <NavLeft swiperRef={swiperRef} navigationDisabled={navigationDisabled} />
 
       <div className="h-full md:w-main">
         <Swiper
@@ -43,24 +38,28 @@ const CalendarView = ({ syncDayColumns }: Props) => {
           onSlideChangeTransitionEnd={() => setNavigationDisabled(false)}
           onTransitionEnd={async (e) => {
             const minusValue = settingStore.slidesPerView + 1
-            if (e.activeIndex === columnStore.dayColumns.length - minusValue) {
+            if (
+              e.activeIndex ===
+              dateColumnStore.dateColumns.length - minusValue
+            ) {
               // add new columns when reaching the end, in this case three elements away
               // from the end of the column array (right navigation)
-              const nextFourDays = getNextFourDays(
-                columnStore.dayColumns[columnStore.dayColumns.length - 1].id,
+              const nextFourDates = getNextFourDates(
+                dateColumnStore.dateColumns[
+                  dateColumnStore.dateColumns.length - 1
+                ].id,
               )
-              columnStore.pushColumns(nextFourDays)
-              await syncDayColumns([...columnStore.dayColumns, ...nextFourDays])
+              dateColumnStore.pushColumns(nextFourDates)
+              refetch()
             }
             // add new columns when reaching the end, in this case
             // the fourth element of the column array (left navigation)
             if (e.activeIndex === 3) {
-              const pastFourDays = getPastFourDays(columnStore.dayColumns[0].id)
-              columnStore.unshiftColumns(pastFourDays.reverse())
-              await syncDayColumns([
-                ...pastFourDays.reverse(),
-                ...columnStore.dayColumns,
-              ])
+              const pastFourDays = getPastFourDates(
+                dateColumnStore.dateColumns[0].id,
+              )
+              dateColumnStore.unshiftColumns(pastFourDays.reverse())
+              refetch()
             }
           }}
           onSlidesLengthChange={(e) => {
@@ -70,19 +69,19 @@ const CalendarView = ({ syncDayColumns }: Props) => {
             }
           }}
         >
-          {columnStore.dayColumns.map((column, index) => {
+          {dateColumnStore.dateColumns.map((column, index) => {
             let columnTodos
-            if (column.order.length === 0) {
+            if (column.todoOrder.length === 0) {
               // there are no todos in the column
               columnTodos = null
             } else {
-              columnTodos = column.order.map(
-                (id) => todoStore.todos.find((todo) => todo.id === id) as ITodo,
+              columnTodos = column.todoOrder.map(
+                (id) => column!.todos!.find((todo) => todo.id === id) as ITodo,
               )
             }
             return (
               <SwiperSlide key={column.id}>
-                <DayColumn
+                <DateColumn
                   todos={columnTodos}
                   column={column}
                   swiperRef={swiperRef}
@@ -94,12 +93,9 @@ const CalendarView = ({ syncDayColumns }: Props) => {
         </Swiper>
       </div>
 
-      <NavRight
-        swiperRef={swiperRef}
-        navigationDisabled={navigationDisabled}
-        syncDayColumns={syncDayColumns}
-      />
+      <NavRight swiperRef={swiperRef} navigationDisabled={navigationDisabled} />
     </section>
   )
 }
+
 export default CalendarView

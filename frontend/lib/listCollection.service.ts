@@ -1,13 +1,5 @@
+import { IListCollection } from '@/types/IListCollection'
 import { AxiosInstance } from 'axios'
-import { IList } from './list.service'
-import { ITodo } from './todo.service'
-
-export interface IListCollection {
-  id: number
-  listOrder: number[]
-  userId: string
-  lists: IList[]
-}
 
 export const getListCollection = async (axiosPrivate: AxiosInstance) => {
   try {

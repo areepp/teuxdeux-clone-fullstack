@@ -5,9 +5,10 @@ import { HiOutlineX, HiPencil } from 'react-icons/hi'
 import * as todoService from '@/lib/todo.service'
 import { useMutation, useQuery, useQueryClient } from 'react-query'
 import useAxiosPrivate from '@/hooks/useAxiosPrivate'
+import { ITodo } from '@/types/ITodo'
 
 interface Props {
-  item: todoService.ITodo
+  item: ITodo
   index: number
   colId: number | string
   parent: 'dateColumn' | 'listCollection'

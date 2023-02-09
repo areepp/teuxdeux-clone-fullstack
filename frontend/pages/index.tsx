@@ -4,6 +4,7 @@ import * as authService from '@/lib/auth.service'
 import useUserStore, { User } from '@/stores/user'
 import { GetServerSidePropsContext } from 'next'
 import { useEffect } from 'react'
+import { resetServerContext } from 'react-beautiful-dnd'
 
 const Index = ({ accessToken }: { accessToken: string }) => {
   const { user, setUser } = useUserStore()
@@ -23,6 +24,7 @@ export const getServerSideProps = async (
 ) => {
   try {
     const response = await authService.getRefreshTokenSSR(context)
+    resetServerContext()
 
     return {
       props: {

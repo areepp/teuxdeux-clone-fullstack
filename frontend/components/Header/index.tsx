@@ -1,9 +1,7 @@
-import { useMyAuth } from '@/context/MyAuthContext'
-import useUserStore from '@/stores/user'
 import { useRouter } from 'next/router'
 import { useState } from 'react'
-import * as authService from '../../lib/auth.service'
-import { useAuth } from '../AuthContext'
+import useUserStore from '@/stores/user'
+import * as authService from '@/lib/auth.service'
 import MyOutsideClickHandler from '../Common/MyOutsideClickHandler'
 
 const Profile = () => {

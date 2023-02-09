@@ -1,11 +1,10 @@
 import { Draggable, Droppable } from 'react-beautiful-dnd'
 import { HiOutlineX } from 'react-icons/hi'
-import useListStore from '@/stores/lists'
+import { useQuery } from 'react-query'
 import MyOutsideClickHandler from '@/components/Common/MyOutsideClickHandler'
-import { useQuery, useQueryClient } from 'react-query'
 import * as listCollectionService from '@/lib/listCollection.service'
 import useAxiosPrivate from '@/hooks/useAxiosPrivate'
-import { IList } from '@/lib/list.service'
+import { IList } from '@/types/IList'
 
 interface Props {
   setIsReOrderModalVisible: React.Dispatch<React.SetStateAction<boolean>>
@@ -13,11 +12,9 @@ interface Props {
 
 const ReOrderListModal = ({ setIsReOrderModalVisible }: Props) => {
   const axiosPrivate = useAxiosPrivate()
-  const { isLoading, isError, data } = useQuery('listCollection', () =>
+  const { isError, data } = useQuery('listCollection', () =>
     listCollectionService.getListCollection(axiosPrivate),
   )
-
-  if (isLoading) return <div>loading</div>
 
   if (isError || !data) return <div>error</div>
 

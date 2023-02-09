@@ -1,28 +1,21 @@
-import * as dayService from '@/lib/day.service'
-import * as listService from '@/lib/list.service'
-import { IListCollection } from '@/lib/listCollection.service'
-import { DayStore } from '@/stores/days'
-import { ListStore } from '@/stores/lists'
-import { IDayColumn } from '@/types/IDayColumn'
+import { IListCollection } from '@/types/IListCollection'
+import { DateColumnStore } from '@/stores/dateColumns'
+import { IDateColumn } from '@/types/IDateColumn'
 import { IList } from '@/types/IList'
-import { AxiosInstance, AxiosResponse } from 'axios'
-import { User } from 'firebase/auth'
+import { AxiosResponse } from 'axios'
 import { DropResult } from 'react-beautiful-dnd'
 import { UseMutateFunction, useQuery } from 'react-query'
 
 export const onDragEndLogic = ({
   result,
-  user,
-  listStore,
-  columnStore,
+  dateColumnStore,
   listCollection,
   editListOrder,
   editList,
+  editDateColumn,
 }: {
   result: DropResult
-  user: User | null
-  listStore: ListStore
-  columnStore: DayStore
+  dateColumnStore: DateColumnStore
   listCollection: IListCollection
   editListOrder: UseMutateFunction<
     AxiosResponse<any, any>,
@@ -39,13 +32,22 @@ export const onDragEndLogic = ({
     },
     unknown
   >
+  editDateColumn: UseMutateFunction<
+    AxiosResponse<any, any>,
+    unknown,
+    {
+      id: string
+      todoOrder: number[]
+    },
+    unknown
+  >
 }) => {
   const { destination, source, draggableId, type } = result
 
   if (!destination) return
 
+  // HANDLE LIST RE-ORDER
   if (type === 'list') {
-    // const newListOrder = Array.from(listStore.listOrder)
     const newListOrder = Array.from(listCollection.listOrder)
     newListOrder.splice(source.index, 1)
     newListOrder.splice(destination.index, 0, parseInt(draggableId))
@@ -53,7 +55,7 @@ export const onDragEndLogic = ({
     return editListOrder(newListOrder)
   }
 
-  // do nothing if the position of the dragged item is not changed
+  // DO NOTHING IF DRAGGED ITEM POSITION IS NOT CHANGED
   if (
     destination.droppableId === source.droppableId &&
     destination.index === source.index
@@ -61,92 +63,95 @@ export const onDragEndLogic = ({
     return
   }
 
-  const destinationIsList = destination.droppableId.startsWith('list-')
   const sourceIsList = source.droppableId.startsWith('list-')
+  const destinationIsList = destination.droppableId.startsWith('list-')
 
-  // let startColumn: IDayColumn | IList
-  // let finishColumn: IDayColumn | IList
+  let startColumn: IDateColumn | IList
+  let finishColumn: IDateColumn | IList
 
-  let startColumn = listCollection.lists.find(
-    (list) => list.id === parseInt(source.droppableId.split('-').pop()!),
-  ) as IList
-  let finishColumn = listCollection.lists.find(
-    (list) => list.id === parseInt(destination.droppableId.split('-').pop()!),
-  ) as IList
+  // determine whether the destination / source is list column
+  // or date column in order to use the correct mutation.
 
-  // determine whether the destination / source is list
-  // or calendar in order to use the correct store.
+  if (sourceIsList) {
+    startColumn = listCollection.lists.find(
+      (list) => list.id === parseInt(source.droppableId.split('-').pop()!),
+    ) as IList
+  } else {
+    startColumn = dateColumnStore.dateColumns.find(
+      (col) => col.id === source.droppableId,
+    ) as IDateColumn
+  }
 
-  // if (sourceIsList) {
-  //   startColumn = listCollection.lists.find(
-  //     (list) => list.id === parseInt(source.droppableId.split('-').pop()!),
-  //   ) as IList
-  // } else {
-  //   startColumn = columnStore.dayColumns.find(
-  //     (col) => col.id === source.droppableId,
-  //   ) as IDayColumn
-  // }
-
-  // if (destinationIsList) {
-  //   finishColumn = listCollection.lists.find(
-  //     (list) => list.id === parseInt(destination.droppableId.split('-').pop()!),
-  //   ) as IList
-  // } else {
-  //   finishColumn = columnStore.dayColumns.find(
-  //     (col) => col.id === destination.droppableId,
-  //   ) as IDayColumn
-  // }
+  if (destinationIsList) {
+    finishColumn = listCollection.lists.find(
+      (list) => list.id === parseInt(destination.droppableId.split('-').pop()!),
+    ) as IList
+  } else {
+    finishColumn = dateColumnStore.dateColumns.find(
+      (col) => col.id === destination.droppableId,
+    ) as IDateColumn
+  }
 
   if (startColumn === finishColumn) {
-    // reorder todo within the same column
+    // REORDER TODO WITHIN THE SAME COLUMN
     const newOrder = Array.from(startColumn!.todoOrder)
     newOrder.splice(source.index, 1)
     newOrder.splice(destination.index, 0, parseInt(draggableId))
 
-    const newColumn = {
-      ...startColumn,
-      order: newOrder,
-    }
-
     if (destinationIsList) {
-      // listStore.editList(newColumn.id, newColumn as IList)
-      editList({ listId: finishColumn.id, todoOrder: newOrder })
+      editList({ listId: finishColumn.id as number, todoOrder: newOrder })
     } else {
-      // columnStore.editColumnById(newColumn.id, newColumn)
-      // dayService.editTodoOrder(user!.uid, finishColumn.id, newOrder)
+      const newColumn = {
+        ...startColumn,
+        todoOrder: newOrder,
+      } as IDateColumn
+
+      dateColumnStore.editColumnById(newColumn.id as string, newColumn)
+      editDateColumn({ id: finishColumn.id as string, todoOrder: newOrder })
     }
   } else {
     // move todo from one column to another
     const newStartOrder = Array.from(startColumn.todoOrder)
     newStartOrder.splice(source.index, 1)
 
-    const newStartColumn = {
-      ...startColumn,
-      order: newStartOrder,
-    }
-
     const newFinishOrder = Array.from(finishColumn.todoOrder)
     newFinishOrder.splice(destination.index, 0, parseInt(draggableId))
 
-    const newFinishColumn = {
-      ...finishColumn,
-      order: newFinishOrder,
-    }
-
     if (sourceIsList) {
-      // listStore.editList(startColumn.id, newStartColumn as IList)
-      editList({ listId: startColumn.id, todoOrder: newStartOrder })
+      editList({ listId: startColumn.id as number, todoOrder: newStartOrder })
     } else {
-      // columnStore.editColumnById(startColumn.id, newStartColumn)
-      // dayService.editTodoOrder(user!.uid, startColumn.id, newStartOrder)
+      const newStartColumn: IDateColumn = {
+        ...startColumn,
+        todoOrder: newStartOrder,
+        todos: startColumn!.todos!.filter(
+          (todo) => todo.id !== parseInt(draggableId),
+        ),
+      } as IDateColumn
+
+      dateColumnStore.editColumnById(startColumn.id as string, newStartColumn)
+      editDateColumn({ id: startColumn.id as string, todoOrder: newStartOrder })
     }
 
     if (destinationIsList) {
-      // listStore.editList(finishColumn.id, newFinishColumn as IList)
-      editList({ listId: finishColumn.id, todoOrder: newFinishOrder })
+      editList({ listId: finishColumn.id as number, todoOrder: newFinishOrder })
     } else {
-      // columnStore.editColumnById(finishColumn.id, newFinishColumn)
-      // dayService.editTodoOrder(user!.uid, finishColumn.id, newFinishOrder)
+      const movedTodo = startColumn!.todos!.filter(
+        (todo) => todo.id === parseInt(draggableId),
+      )[0]
+
+      const newFinishColumn: IDateColumn = {
+        ...finishColumn,
+        todoOrder: newFinishOrder,
+        todos: finishColumn.todos
+          ? [...finishColumn.todos, movedTodo]
+          : [movedTodo],
+      } as IDateColumn
+
+      dateColumnStore.editColumnById(finishColumn.id as string, newFinishColumn)
+      editDateColumn({
+        id: finishColumn.id as string,
+        todoOrder: newFinishOrder,
+      })
     }
   }
 }

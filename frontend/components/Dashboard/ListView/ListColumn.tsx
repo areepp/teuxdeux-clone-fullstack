@@ -5,12 +5,13 @@ import TodoItem from '../Common/TodoItem'
 import { getRenderClone } from '../Common/getRenderClone'
 import ListOption from './ListOption'
 import * as listService from '@/lib/list.service'
-import { ITodo } from '@/lib/todo.service'
+import { ITodo } from '@/types/ITodo'
 import { useMutation, useQueryClient } from 'react-query'
 import useAxiosPrivate from '@/hooks/useAxiosPrivate'
+import { IList } from '@/types/IList'
 
 interface Props {
-  list: listService.IList
+  list: IList
   todos: ITodo[] | null
 }
 
@@ -92,7 +93,7 @@ const ListColumn = ({ todos, list }: Props) => {
                       index={i}
                       key={item.id}
                       colId={list.id}
-                      childOf="list"
+                      parent="listCollection"
                     />
                   )
                 })}

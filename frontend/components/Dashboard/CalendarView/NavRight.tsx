@@ -4,30 +4,34 @@ import 'react-day-picker/dist/style.css'
 import { IoCalendar } from 'react-icons/io5'
 import SwiperCore from 'swiper'
 import {
-  getReInitiatedDays,
+  getReintiatedDateColumns,
   transformDateSlashToDash,
 } from '@/helper/dateHelper'
 import MyOutsideClickHandler from '@/components/Common/MyOutsideClickHandler'
-
-import useDayStore from '@/stores/days'
-import { IDayColumn } from '@/types/IDayColumn'
-
+import useDayStore from '@/stores/dateColumns'
 import Arrow from '../Common/Arrow'
+import useDateColumnQuery from '@/hooks/useDateColumnQuery'
 
 interface Props {
   navigationDisabled: boolean
   swiperRef: SwiperCore | undefined
-  syncDayColumns: (_localState: IDayColumn[]) => Promise<void>
 }
 
-const NavRight = ({ navigationDisabled, swiperRef, syncDayColumns }: Props) => {
-  const columnStore = useDayStore()
+const NavRight = ({ navigationDisabled, swiperRef }: Props) => {
+  const dateColumnStore = useDayStore()
   const [isCalendarOpen, setIsCalendarOpen] = useState(false)
+  const [selectedDate, setSelectedDate] = useState<Date>(new Date())
+
+  const { refetch } = useDateColumnQuery(
+    getReintiatedDateColumns(selectedDate).map((col) => col.id),
+    { enabled: false },
+  )
 
   const handleDayClick = async (day: Date) => {
+    setSelectedDate(day)
     setIsCalendarOpen(false)
 
-    const clickedDayIndex = columnStore.dayColumns
+    const clickedDayIndex = dateColumnStore.dateColumns
       .map((col) => col.id)
       .indexOf(transformDateSlashToDash(day.toLocaleDateString()))
 
@@ -37,7 +41,7 @@ const NavRight = ({ navigationDisabled, swiperRef, syncDayColumns }: Props) => {
       }
       // prettier-ignore
       if (
-        clickedDayIndex > columnStore.dayColumns.length - 4
+        clickedDayIndex > dateColumnStore.dateColumns.length - 4
         || clickedDayIndex < 3
       ) {
         return false
@@ -48,8 +52,8 @@ const NavRight = ({ navigationDisabled, swiperRef, syncDayColumns }: Props) => {
     if (withinReach()) {
       swiperRef?.slideTo(clickedDayIndex, 600)
     } else {
-      columnStore.setColumns(getReInitiatedDays(day))
-      await syncDayColumns(getReInitiatedDays(day))
+      dateColumnStore.setColumns(getReintiatedDateColumns(day))
+      refetch()
       swiperRef?.slideTo(7, 0)
     }
   }

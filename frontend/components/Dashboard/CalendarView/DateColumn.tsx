@@ -2,74 +2,66 @@ import clsx from 'clsx'
 import { KeyboardEvent, useState } from 'react'
 import { Droppable } from 'react-beautiful-dnd'
 import SwiperCore from 'swiper'
-import { v4 as uuidv4 } from 'uuid'
 import {
   checkIsPast,
   checkIsToday,
   getDayOfTheWeek,
   getFullDate,
 } from '@/helper/dateHelper'
-import * as dayService from '@/lib/day.service'
 import * as todoService from '@/lib/todo.service'
-import useDayStore from '@/stores/days'
-import useTodoStore, { ITodo } from '@/stores/todos'
 import useSettingStore from '@/stores/settings'
-import { IDayColumn } from '@/types/IDayColumn'
-import { useAuth } from '../../AuthContext'
+import { IDateColumn } from '@/types/IDateColumn'
 import TodoItem from '../Common/TodoItem'
 import { getRenderClone } from '../Common/getRenderClone'
+import { ITodo } from '@/types/ITodo'
+import { useMutation, useQueryClient } from 'react-query'
+import useAxiosPrivate from '@/hooks/useAxiosPrivate'
 
 interface Props {
   todos: ITodo[] | null
-  column: IDayColumn
+  column: IDateColumn
   swiperRef: SwiperCore | undefined
   index: number
 }
 
-const DayColumn = ({ todos, column, index, swiperRef }: Props) => {
-  const { user } = useAuth()
-  const columnStore = useDayStore()
-  const todoStore = useTodoStore()
+const DateColumn = ({ todos, column, index, swiperRef }: Props) => {
+  const queryClient = useQueryClient()
+  const axiosPrivate = useAxiosPrivate()
   const settingStore = useSettingStore()
   const [newTodoInputValue, setNewTodoInputValue] = useState<string>('')
   const isToday = checkIsToday(column.id)
   const isPast = checkIsPast(column.id)
   const isColumnOnFarLeft = index === swiperRef?.realIndex
+
+  const { mutate: addTodoMutation } = useMutation(
+    () =>
+      todoService.addTodo(axiosPrivate, {
+        text: newTodoInputValue,
+        dateColumnId: column.id,
+      }),
+    { onSuccess: () => queryClient.invalidateQueries('dateColumn') },
+  )
+
   const renderClone = getRenderClone(todos)
   // renderClone allows to move todo item to other parent
   // (ex.CALENDAR VIEW -> LIST VIEW) while maintaining the desired drag behavior
 
-  const handleAddTodo = async () => {
+  const handleAddTodo = () => {
     setNewTodoInputValue('')
-    const newTodoId = uuidv4()
-
-    columnStore.addTodoToColumn(column.id, newTodoId)
-    todoStore.pushTodo({
-      id: newTodoId,
-      text: newTodoInputValue,
-      checked: false,
-    })
-
-    Promise.all([
-      todoService.addTodo(user!.uid, newTodoId, {
-        text: newTodoInputValue,
-        checked: false,
-      }),
-      dayService.addTodoToColumn(user!.uid, column.id, newTodoId),
-    ])
+    addTodoMutation()
   }
 
-  const handleKeyDown = async (e: KeyboardEvent) => {
+  const handleKeyDown = (e: KeyboardEvent) => {
     if (e.key === 'Enter') {
-      await handleAddTodo()
+      handleAddTodo()
     }
   }
 
-  const handleInputBlur = async (e: React.FocusEvent<HTMLInputElement>) => {
+  const handleInputBlur = (e: React.FocusEvent<HTMLInputElement>) => {
     if (e.target.value === '') {
       return
     }
-    await handleAddTodo()
+    handleAddTodo()
   }
 
   return (
@@ -116,7 +108,7 @@ const DayColumn = ({ todos, column, index, swiperRef }: Props) => {
                       index={i}
                       key={item.id}
                       colId={column.id}
-                      childOf="calendar"
+                      parent="dateColumn"
                     />
                   )
                 })}
@@ -137,4 +129,4 @@ const DayColumn = ({ todos, column, index, swiperRef }: Props) => {
   )
 }
 
-export default DayColumn
+export default DateColumn

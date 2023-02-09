@@ -1,4 +1,4 @@
-import { ITodo } from '@/lib/todo.service'
+import { ITodo } from '@/types/ITodo'
 import clsx from 'clsx'
 import {
   DraggableProvided,

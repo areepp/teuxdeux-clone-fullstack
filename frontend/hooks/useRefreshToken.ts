@@ -1,6 +1,5 @@
 import axios from '@/lib/axios'
 import useUserStore from '@/stores/user'
-import { useRef } from 'react'
 
 const useRefreshToken = () => {
   const { setUser } = useUserStore()

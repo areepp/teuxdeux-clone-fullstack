@@ -1,37 +1,24 @@
 import { useEffect } from 'react'
 import { DragDropContext, DropResult } from 'react-beautiful-dnd'
-import CalendarView from '@/components/Dashboard/CalendarView'
-import { getInitialColumns } from '@/helper/dateHelper'
-import { onDragEndLogic } from '@/helper/onDragEndLogic'
-import * as dayService from '@/lib/day.service'
+import { useMutation, useQuery, useQueryClient } from 'react-query'
+import * as dateColumnService from '@/lib/dateColumn.service'
 import * as listService from '@/lib/list.service'
-import * as todoService from '@/lib/todo.service'
 import * as listCollectionService from '@/lib/listCollection.service'
-import useListStore, { IList } from '@/stores/lists'
-import useTodoStore, { ITodo } from '@/stores/todos'
-import useDayStore from '@/stores/days'
-import useSettingStore from '@/stores/settings'
-import { IDayColumn } from '@/types/IDayColumn'
-import { useAuth } from '../AuthContext'
+import CalendarView from '@/components/Dashboard/CalendarView'
+import { onDragEndLogic } from '@/helper/onDragEndLogic'
 import ListView from './ListView'
 import Setting from './Common/Setting'
+import useDateColumnStore from '@/stores/dateColumns'
+import useSettingStore from '@/stores/settings'
 import useAxiosPrivate from '@/hooks/useAxiosPrivate'
-import { useMutation, useQuery, useQueryClient } from 'react-query'
 
 const Dashboard = () => {
-  const { user } = useAuth()
-  const todoStore = useTodoStore()
-  const columnStore = useDayStore()
-  const listStore = useListStore()
+  const dateColumnStore = useDateColumnStore()
   const settingStore = useSettingStore()
   const axiosPrivate = useAxiosPrivate()
   const queryClient = useQueryClient()
 
-  const {
-    isLoading,
-    isError,
-    data: listCollection,
-  } = useQuery('listCollection', () =>
+  const { data: listCollection } = useQuery('listCollection', () =>
     listCollectionService.getListCollection(axiosPrivate),
   )
 
@@ -51,44 +38,10 @@ const Dashboard = () => {
     },
   )
 
-  // const syncDayColumns = async (dayColumns: IDayColumn[]) => {
-  //   const calendarResponse = await dayService.getDayColumnsByIds(
-  //     user!.uid,
-  //     dayColumns.map((day) => day.id),
-  //   )
-  //   const columnFromFirestore = calendarResponse.flat() as IDayColumn[]
-  //   columnStore.syncColumns(columnFromFirestore)
-  // }
-
-  useEffect(() => {
-    // async function fetchTodos() {
-    //   const todoResponse = await todoService.getAllTodos(user!.uid)
-    //   const todosMapped = todoResponse.docs.map((doc) => ({
-    //     ...doc.data(),
-    //     id: doc.id,
-    //   }))
-    //   todoStore.setTodos(todosMapped as ITodo[])
-    // }
-    // async function syncListToFirebase() {
-    //   const [listResponse, listOrderResponse] = await Promise.all([
-    //     listService.getLists(user!.uid),
-    //     listService.getListOrder(user!.uid),
-    //   ])
-    //   const listMapped = listResponse.docs.map((doc) => ({
-    //     ...doc.data(),
-    //     id: doc.id,
-    //   }))
-    //   if (listMapped.length === 0 || !listOrderResponse.data()) {
-    //     return
-    //   }
-    //   listStore.setLists(listMapped as IList[])
-    //   listStore.setListOrder(listOrderResponse!.data()!.order)
-    // }
-    // fetchTodos()
-    // syncListToFirebase()
-    // syncDayColumns(getInitialColumns())
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [])
+  const { mutate: editDateColumn } = useMutation(
+    (data: { id: string; todoOrder: number[] }) =>
+      dateColumnService.editTodoOrder(axiosPrivate, data),
+  )
 
   useEffect(() => {
     const checkScreenSize = () => {
@@ -105,12 +58,11 @@ const Dashboard = () => {
   const onDragEnd = async (result: DropResult) => {
     onDragEndLogic({
       result,
-      user,
-      listStore,
-      columnStore,
+      dateColumnStore,
       listCollection: listCollection!,
       editListOrder,
       editList,
+      editDateColumn,
     })
   }
 
@@ -118,7 +70,7 @@ const Dashboard = () => {
     <main className="flex-auto flex flex-col">
       <Setting />
       <DragDropContext onDragEnd={onDragEnd}>
-        {/* <CalendarView syncDayColumns={syncDayColumns} /> */}
+        <CalendarView />
         <ListView />
       </DragDropContext>
     </main>

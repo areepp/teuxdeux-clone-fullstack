@@ -18,8 +18,51 @@ export const editTodoOrder = async ({
 }: {
   id: string
   todoOrder: number[]
-}) =>
-  db.dateColumn.update({
+}) => {
+  if (todoOrder) {
+    const dateColumnBefore =
+      (await db.dateColumn.findUnique({
+        where: { id },
+      })) ?? (await db.dateColumn.create({ data: { id, todoOrder: [] } }))
+
+    // CONNECT TODO FROM ANOTHER DATECOLUMN
+    if (dateColumnBefore!.todoOrder.length < todoOrder.length) {
+      await db.dateColumn.update({
+        where: {
+          id,
+        },
+        data: {
+          todos: {
+            connect: {
+              id: todoOrder.filter(
+                (id) => dateColumnBefore!.todoOrder.indexOf(id) < 0,
+              )[0],
+            },
+          },
+        },
+      })
+    }
+
+    // DISCONNECT TODO THAT MOVED OUT OF THE DATECOLUMN
+    if (dateColumnBefore!.todoOrder.length > todoOrder.length) {
+      await db.dateColumn.update({
+        where: {
+          id,
+        },
+        data: {
+          todos: {
+            disconnect: {
+              id: dateColumnBefore!.todoOrder.filter(
+                (id) => todoOrder.indexOf(id) < 0,
+              )[0],
+            },
+          },
+        },
+      })
+    }
+  }
+
+  return db.dateColumn.update({
     where: {
       id,
     },
@@ -27,3 +70,4 @@ export const editTodoOrder = async ({
       todoOrder,
     },
   })
+}

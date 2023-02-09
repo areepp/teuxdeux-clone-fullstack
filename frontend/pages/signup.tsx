@@ -1,13 +1,9 @@
-import { FirebaseError } from 'firebase/app'
 import { GetServerSidePropsContext } from 'next'
 import Link from 'next/link'
-import nookies from 'nookies'
 import { useState } from 'react'
 import { SubmitHandler, useForm } from 'react-hook-form'
 import Input, { Inputs } from '@/components/Auth/Input'
 import * as authService from '@/lib/auth.service'
-import { adminAuth } from '@/lib/firebaseAdmin'
-import * as userService from '@/lib/user.service'
 import Button from '@/components/Auth/Button'
 import { useMutation } from 'react-query'
 
