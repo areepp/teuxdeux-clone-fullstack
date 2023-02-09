@@ -1,19 +1,19 @@
-import { IDayColumn } from '@/types/IDayColumn'
+import { IDateColumn } from '@/types/IDateColumn'
 
 export const transformDateSlashToDash = (date: string) =>
   date.replace(/\//g, '-')
 
 const columnFactory = (date: string) => ({
   id: transformDateSlashToDash(date),
-  order: [],
+  todoOrder: [],
 })
 
-export const getDaysColumns = (
+export const getDateColumns = (
   initialDate: Date,
   days: number,
   direction: 'future' | 'past',
-): IDayColumn[] => {
-  const returnValue: IDayColumn[] = []
+): IDateColumn[] => {
+  const returnValue: IDateColumn[] = []
   let multiplier = 1
 
   if (direction === 'past') multiplier = -1
@@ -28,11 +28,11 @@ export const getDaysColumns = (
   return returnValue
 }
 
-export const getInitialColumns = (): IDayColumn[] => {
+export const getInitialDateColumns = (): IDateColumn[] => {
   // returns an array of column that contains 21 days (last week and next 2 weeks)
   const today = new Date()
-  const nextTwoWeeks = getDaysColumns(today, 14, 'future')
-  const lastWeek = getDaysColumns(today, 7, 'past')
+  const nextTwoWeeks = getDateColumns(today, 14, 'future')
+  const lastWeek = getDateColumns(today, 7, 'past')
 
   return [
     ...lastWeek.reverse(),
@@ -41,22 +41,22 @@ export const getInitialColumns = (): IDayColumn[] => {
   ]
 }
 
-export const getReInitiatedDays = (date: Date): IDayColumn[] => [
-  ...getDaysColumns(date, 7, 'past').reverse(),
+export const getReintiatedDateColumns = (date: Date): IDateColumn[] => [
+  ...getDateColumns(date, 7, 'past').reverse(),
   columnFactory(date.toLocaleDateString()),
-  ...getDaysColumns(date, 7, 'future'),
+  ...getDateColumns(date, 7, 'future'),
 ]
 
-export const getNextFourDays = (startDate: string): IDayColumn[] => {
+export const getNextFourDates = (startDate: string): IDateColumn[] => {
   const date = new Date(startDate)
 
-  return getDaysColumns(date, 4, 'future')
+  return getDateColumns(date, 4, 'future')
 }
 
-export const getPastFourDays = (startDate: string): IDayColumn[] => {
+export const getPastFourDates = (startDate: string): IDateColumn[] => {
   const date = new Date(startDate)
 
-  return getDaysColumns(date, 4, 'past')
+  return getDateColumns(date, 4, 'past')
 }
 
 export const getDayOfTheWeek = (prop: string) => {
