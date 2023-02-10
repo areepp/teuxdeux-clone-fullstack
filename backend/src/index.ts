@@ -21,6 +21,8 @@ app.use(cors(corsOptions))
 app.use(express.json())
 app.use(cookieParser())
 
+app.get('/', (_req, res) => res.send('Hello world!')) // for testing the domain
+
 app.use('/api/auth', authRouter)
 
 // AUTHENTICATION REQUIRED
@@ -32,7 +34,9 @@ app.use('/api/date-columns', dateColumnRouter)
 
 app.use(errorHandler)
 
-app.listen(5000, () => {
+const PORT = process.env.port || 5000
+
+app.listen(PORT, () => {
   // eslint-disable-next-line no-console
-  console.log('server is running on port 5000')
+  console.log(`server is running on port ${PORT}`)
 })
