@@ -1,10 +1,28 @@
 import { GetServerSidePropsContext } from 'next'
 import { useEffect } from 'react'
 import { resetServerContext } from 'react-beautiful-dnd'
+// eslint-disable-next-line import/no-extraneous-dependencies
+import { ErrorBoundary } from 'react-error-boundary'
 import Dashboard from '@/components/Dashboard'
 import Header from '@/components/Header'
 import * as authService from '@/lib/auth.service'
 import useUserStore from '@/stores/user'
+
+const ErrorFallback = ({
+  error,
+  resetErrorBoundary,
+}: {
+  error: any
+  resetErrorBoundary: any
+}) => (
+  <div role="alert">
+    <p>Something went wrong:</p>
+    <pre>{error.message}</pre>
+    <button type="button" onClick={resetErrorBoundary}>
+      Try again
+    </button>
+  </div>
+)
 
 const Index = ({ accessToken }: { accessToken: string }) => {
   const { setUser } = useUserStore()
@@ -14,7 +32,12 @@ const Index = ({ accessToken }: { accessToken: string }) => {
   return (
     <div className="flex flex-col h-full">
       <Header />
-      <Dashboard />
+      <ErrorBoundary
+        FallbackComponent={ErrorFallback}
+        onReset={() => setUser(accessToken)}
+      >
+        <Dashboard />
+      </ErrorBoundary>
     </div>
   )
 }
