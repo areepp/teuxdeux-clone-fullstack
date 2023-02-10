@@ -54,10 +54,9 @@ export const login = async (
     res.cookie('jwt', refreshToken, {
       httpOnly: true,
       maxAge: 24 * 60 * 60 * 7 * 1000, // 7 days
-      secure: false,
-      sameSite: 'strict',
+      secure: true,
+      sameSite: 'none',
       path: '/',
-      domain: process.env.CLIENT_DOMAIN,
     })
 
     return res.json({ accessToken })
