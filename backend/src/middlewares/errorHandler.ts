@@ -11,12 +11,12 @@ const errorHandler = (
   if (err instanceof ApiError) {
     const statusCode = err.statusCode ?? 500
     res.status(statusCode)
-    res.json({
+    return res.json({
       message: err.message,
     })
   }
 
-  res.status(500).json('something went wrong')
+  return res.status(500).json('something went wrong')
 }
 
 export default errorHandler
