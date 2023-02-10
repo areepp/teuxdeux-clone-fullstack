@@ -12,8 +12,7 @@ const SlideProgress = ({ activeSlideIndex }: Props) => {
   const settingStore = useSettingStore()
 
   const { data } = useQuery('listCollection', () =>
-    getListCollection(axiosPrivate),
-  )
+    getListCollection(axiosPrivate)) // prettier-ignore
 
   if (data!.listOrder.length <= settingStore.slidesPerView) {
     return null

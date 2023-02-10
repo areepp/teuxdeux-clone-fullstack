@@ -1,9 +1,9 @@
 import SwiperCore from 'swiper'
 import { useQuery } from 'react-query'
 import useSettingStore from '@/stores/settings'
-import Arrow from '../Common/Arrow'
 import { getListCollection } from '@/lib/listCollection.service'
 import useAxiosPrivate from '@/hooks/useAxiosPrivate'
+import Arrow from '../Common/Arrow'
 
 interface Props {
   swiperRef: SwiperCore | undefined

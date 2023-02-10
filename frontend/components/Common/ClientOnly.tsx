@@ -1,11 +1,6 @@
-import { Fragment, useEffect, useState } from 'react'
+import { Fragment, ReactNode, useEffect, useState } from 'react'
 
-const ClientOnly = ({
-  children,
-  ...delegated
-}: {
-  children: React.ReactNode
-}) => {
+const ClientOnly = ({ children, ...delegated }: { children: ReactNode }) => {
   const [hasMounted, setHasMounted] = useState(false)
 
   useEffect(() => {
@@ -14,6 +9,7 @@ const ClientOnly = ({
 
   if (!hasMounted) return null
 
+  // eslint-disable-next-line react/jsx-no-useless-fragment
   return <Fragment {...delegated}>{children}</Fragment>
 }
 

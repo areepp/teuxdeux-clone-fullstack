@@ -1,5 +1,5 @@
-import { IListCollection } from '@/types/IListCollection'
 import { AxiosInstance } from 'axios'
+import { IListCollection } from '@/types/IListCollection'
 
 export const getListCollection = async (axiosPrivate: AxiosInstance) => {
   try {
@@ -15,6 +15,4 @@ export const getListCollection = async (axiosPrivate: AxiosInstance) => {
 export const editListOrder = async (
   axiosPrivate: AxiosInstance,
   body: { listOrder: number[] },
-) => {
-  return axiosPrivate.patch('/list-collections', body)
-}
+) => axiosPrivate.patch('/list-collections', body)

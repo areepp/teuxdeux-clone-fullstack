@@ -1,16 +1,16 @@
-import Dashboard from '@/components/Dashboard'
-import Header from '@/components/Header'
-import * as authService from '@/lib/auth.service'
-import useUserStore, { User } from '@/stores/user'
 import { GetServerSidePropsContext } from 'next'
 import { useEffect } from 'react'
 import { resetServerContext } from 'react-beautiful-dnd'
+import Dashboard from '@/components/Dashboard'
+import Header from '@/components/Header'
+import * as authService from '@/lib/auth.service'
+import useUserStore from '@/stores/user'
 
 const Index = ({ accessToken }: { accessToken: string }) => {
-  const { user, setUser } = useUserStore()
+  const { setUser } = useUserStore()
   useEffect(() => {
     setUser(accessToken)
-  }, [])
+  }, [setUser, accessToken])
   return (
     <div className="flex flex-col h-full">
       <Header />

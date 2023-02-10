@@ -1,38 +1,38 @@
-name: Simple Pipeline
+# name: Simple Pipeline
 
-on:
-  pull_request:
-    branches:
-      - main
-  push:
-    branches:
-      - main
+# on:
+#   pull_request:
+#     branches:
+#       - main
+#   push:
+#     branches:
+#       - main
 
-jobs:
-  simple_deployment_pipeline:
-    if: ${{ github.event_name == 'pull_request' }}
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
-      - uses: actions/setup-node@v3
-        with:
-          node-version: '16'
-      - name: npm install
-        run: npm install
-      - name: lint
-        run: npm run lint
-      - name: test
-        run: npm run test
+# jobs:
+#   simple_deployment_pipeline:
+#     if: ${{ github.event_name == 'pull_request' }}
+#     runs-on: ubuntu-latest
+#     steps:
+#       - uses: actions/checkout@v3
+#       - uses: actions/setup-node@v3
+#         with:
+#           node-version: '16'
+#       - name: npm install
+#         run: npm install
+#       - name: lint
+#         run: npm run lint
+#       - name: test
+#         run: npm run test
 
-  tag_release:
-    if: ${{ github.event_name == 'push' }}
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
-        with:
-          fetch-depth: '0'
-      - name: Bump version and push tag
-        uses: anothrNick/github-tag-action@1.55.0
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          WITH_V: true
+#   tag_release:
+#     if: ${{ github.event_name == 'push' }}
+#     runs-on: ubuntu-latest
+#     steps:
+#       - uses: actions/checkout@v3
+#         with:
+#           fetch-depth: '0'
+#       - name: Bump version and push tag
+#         uses: anothrNick/github-tag-action@1.55.0
+#         env:
+#           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+#           WITH_V: true

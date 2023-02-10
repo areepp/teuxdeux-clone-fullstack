@@ -8,7 +8,7 @@ import {
 
 /* eslint-disable react/display-name */
 // prettier-ignore
-export const getRenderClone = (todos: ITodo[] | null) =>
+const getRenderClone = (todos: ITodo[] | null) =>
   (
     provided: DraggableProvided,
     _snapshot: DraggableStateSnapshot,
@@ -33,3 +33,5 @@ export const getRenderClone = (todos: ITodo[] | null) =>
       </div>
     )
   }
+
+export default getRenderClone

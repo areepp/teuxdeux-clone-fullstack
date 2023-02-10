@@ -1,7 +1,8 @@
 import clsx from 'clsx'
-import { KeyboardEvent, useState } from 'react'
+import { KeyboardEvent, useState, FocusEvent } from 'react'
 import { Droppable } from 'react-beautiful-dnd'
 import SwiperCore from 'swiper'
+import { useMutation, useQueryClient } from 'react-query'
 import {
   checkIsPast,
   checkIsToday,
@@ -11,11 +12,10 @@ import {
 import * as todoService from '@/lib/todo.service'
 import useSettingStore from '@/stores/settings'
 import { IDateColumn } from '@/types/IDateColumn'
-import TodoItem from '../Common/TodoItem'
-import { getRenderClone } from '../Common/getRenderClone'
 import { ITodo } from '@/types/ITodo'
-import { useMutation, useQueryClient } from 'react-query'
 import useAxiosPrivate from '@/hooks/useAxiosPrivate'
+import TodoItem from '../Common/TodoItem'
+import getRenderClone from '../Common/getRenderClone'
 
 interface Props {
   todos: ITodo[] | null
@@ -57,7 +57,7 @@ const DateColumn = ({ todos, column, index, swiperRef }: Props) => {
     }
   }
 
-  const handleInputBlur = (e: React.FocusEvent<HTMLInputElement>) => {
+  const handleInputBlur = (e: FocusEvent<HTMLInputElement>) => {
     if (e.target.value === '') {
       return
     }

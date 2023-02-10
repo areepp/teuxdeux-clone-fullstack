@@ -1,14 +1,14 @@
-import { useState } from 'react'
+import { useState, KeyboardEvent, FocusEvent } from 'react'
 import { Droppable } from 'react-beautiful-dnd'
-import * as todoService from '@/lib/todo.service'
-import TodoItem from '../Common/TodoItem'
-import { getRenderClone } from '../Common/getRenderClone'
-import ListOption from './ListOption'
+import { useMutation, useQueryClient } from 'react-query'
 import * as listService from '@/lib/list.service'
 import { ITodo } from '@/types/ITodo'
-import { useMutation, useQueryClient } from 'react-query'
 import useAxiosPrivate from '@/hooks/useAxiosPrivate'
 import { IList } from '@/types/IList'
+import * as todoService from '@/lib/todo.service'
+import TodoItem from '../Common/TodoItem'
+import getRenderClone from '../Common/getRenderClone'
+import ListOption from './ListOption'
 
 interface Props {
   list: IList
@@ -39,7 +39,8 @@ const ListColumn = ({ todos, list }: Props) => {
   )
 
   const renderClone = getRenderClone(todos)
-  // renderClone allows to move todo item to another parent container (EX: LIST COLUMN -> DATE COLUMN)
+  // renderClone allows to move todo item to another parent container
+  // (EX: LIST COLUMN -> DATE COLUMN)
   // while maintaining the desired drag behavior
 
   const handleAddTodo = async () => {
@@ -47,13 +48,13 @@ const ListColumn = ({ todos, list }: Props) => {
     addTodoMutation()
   }
 
-  const handleKeyDown = async (e: React.KeyboardEvent<HTMLInputElement>) => {
+  const handleKeyDown = async (e: KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Enter') {
       handleAddTodo()
     }
   }
 
-  const handleInputBlur = async (e: React.FocusEvent<HTMLInputElement>) => {
+  const handleInputBlur = async (e: FocusEvent<HTMLInputElement>) => {
     if (e.target.value === '') {
       return
     }

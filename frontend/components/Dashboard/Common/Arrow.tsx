@@ -1,8 +1,9 @@
+import { MouseEventHandler } from 'react'
 import { FaChevronRight, FaChevronLeft } from 'react-icons/fa'
 
 interface Props {
   left?: boolean
-  onClick: React.MouseEventHandler
+  onClick: MouseEventHandler
   navigationDisabled?: boolean
 }
 

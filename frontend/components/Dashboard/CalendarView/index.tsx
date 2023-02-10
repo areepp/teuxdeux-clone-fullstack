@@ -5,11 +5,11 @@ import { Swiper, SwiperSlide } from 'swiper/react'
 import { getNextFourDates, getPastFourDates } from '@/helper/dateHelper'
 import useDateColumnStore from '@/stores/dateColumns'
 import useSettingStore from '@/stores/settings'
+import useDateColumnQuery from '@/hooks/useDateColumnQuery'
+import { ITodo } from '@/types/ITodo'
 import DateColumn from './DateColumn'
 import NavLeft from './NavLeft'
 import NavRight from './NavRight'
-import useDateColumnQuery from '@/hooks/useDateColumnQuery'
-import { ITodo } from '@/types/ITodo'
 
 const CalendarView = () => {
   const dateColumnStore = useDateColumnStore()

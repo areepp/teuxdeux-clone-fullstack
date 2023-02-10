@@ -1,9 +1,9 @@
-import { Inputs } from '@/components/Auth/Input'
 import { GetServerSidePropsContext } from 'next'
+import { Inputs } from '@/components/Auth/Input'
 import axios from './axios'
 
 export const signup = async (body: Inputs) =>
-  await axios.post('/auth/signup', JSON.stringify(body), {
+  axios.post('/auth/signup', JSON.stringify(body), {
     headers: {
       'Content-Type': 'application/json',
     },
@@ -19,7 +19,7 @@ export const login = async (body: Inputs) =>
   })
 
 export const getRefreshTokenSSR = async (context: GetServerSidePropsContext) =>
-  await axios.get<{ accessToken: string }>('/auth/refresh', {
+  axios.get<{ accessToken: string }>('/auth/refresh', {
     withCredentials: true,
     headers: {
       cookie: context.req.headers.cookie,
@@ -27,5 +27,4 @@ export const getRefreshTokenSSR = async (context: GetServerSidePropsContext) =>
   })
 
 // prettier-ignore
-export const logOut = async () =>  
-    await axios.post('/auth/logout', {}, { withCredentials: true })
+export const logOut = async () => axios.post('/auth/logout', {}, { withCredentials: true })

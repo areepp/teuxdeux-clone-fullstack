@@ -1,4 +1,4 @@
-import { IDateColumn } from '@/types/IDateColumn'
+import type { IDateColumn } from '@/types/IDateColumn'
 
 export const transformDateSlashToDash = (date: string) =>
   date.replace(/\//g, '-')

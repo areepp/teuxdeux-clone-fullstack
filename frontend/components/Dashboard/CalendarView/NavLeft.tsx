@@ -5,9 +5,8 @@ import {
   transformDateSlashToDash,
 } from '@/helper/dateHelper'
 import useDayStore from '@/stores/dateColumns'
-import Arrow from '../Common/Arrow'
 import useDateColumnQuery from '@/hooks/useDateColumnQuery'
-import { useQueryClient } from 'react-query'
+import Arrow from '../Common/Arrow'
 
 interface Props {
   navigationDisabled: boolean
@@ -15,7 +14,6 @@ interface Props {
 }
 
 const NavLeft = ({ navigationDisabled, swiperRef }: Props) => {
-  const queryClient = useQueryClient()
   const dateColumnStore = useDayStore()
   const { refetch } = useDateColumnQuery(
     getInitialDateColumns().map((col) => col.id),

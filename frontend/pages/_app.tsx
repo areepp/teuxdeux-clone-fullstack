@@ -6,12 +6,10 @@ import { ReactQueryDevtools } from 'react-query/devtools'
 const queryClient = new QueryClient()
 
 const App = ({ Component, pageProps }: AppProps) => (
-  <>
-    <QueryClientProvider client={queryClient}>
-      <Component {...pageProps} />
-      <ReactQueryDevtools initialIsOpen={false} position="bottom-right" />
-    </QueryClientProvider>
-  </>
+  <QueryClientProvider client={queryClient}>
+    <Component {...pageProps} />
+    <ReactQueryDevtools initialIsOpen={false} position="bottom-right" />
+  </QueryClientProvider>
 )
 
 export default App

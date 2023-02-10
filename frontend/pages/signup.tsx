@@ -1,11 +1,11 @@
 import { GetServerSidePropsContext } from 'next'
 import Link from 'next/link'
 import { useState } from 'react'
+import { useMutation } from 'react-query'
 import { SubmitHandler, useForm } from 'react-hook-form'
 import Input, { Inputs } from '@/components/Auth/Input'
 import * as authService from '@/lib/auth.service'
 import Button from '@/components/Auth/Button'
-import { useMutation } from 'react-query'
 
 interface IMessage {
   text: string
@@ -25,7 +25,7 @@ const SignUp = () => {
 
   const onSubmit: SubmitHandler<Inputs> = async (data) => {
     try {
-      const res = await mutateAsync(data)
+      await mutateAsync(data)
       setMessage({
         text: 'Sign up succesful, you can now login.',
         type: 'success',

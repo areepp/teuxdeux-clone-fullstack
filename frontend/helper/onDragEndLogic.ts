@@ -1,12 +1,13 @@
-import { IListCollection } from '@/types/IListCollection'
-import { DateColumnStore } from '@/stores/dateColumns'
-import { IDateColumn } from '@/types/IDateColumn'
-import { IList } from '@/types/IList'
+/* eslint-disable @typescript-eslint/indent */
 import { AxiosResponse } from 'axios'
 import { DropResult } from 'react-beautiful-dnd'
-import { UseMutateFunction, useQuery } from 'react-query'
+import { UseMutateFunction } from 'react-query'
+import type { IListCollection } from '@/types/IListCollection'
+import { DateColumnStore } from '@/stores/dateColumns'
+import type { IDateColumn } from '@/types/IDateColumn'
+import type { IList } from '@/types/IList'
 
-export const onDragEndLogic = ({
+const onDragEndLogic = ({
   result,
   dateColumnStore,
   listCollection,
@@ -50,8 +51,9 @@ export const onDragEndLogic = ({
   if (type === 'list') {
     const newListOrder = Array.from(listCollection.listOrder)
     newListOrder.splice(source.index, 1)
-    newListOrder.splice(destination.index, 0, parseInt(draggableId))
+    newListOrder.splice(destination.index, 0, parseInt(draggableId, 10))
 
+    // eslint-disable-next-line consistent-return
     return editListOrder(newListOrder)
   }
 
@@ -74,7 +76,7 @@ export const onDragEndLogic = ({
 
   if (sourceIsList) {
     startColumn = listCollection.lists.find(
-      (list) => list.id === parseInt(source.droppableId.split('-').pop()!),
+      (list) => list.id === parseInt(source.droppableId.split('-').pop()!, 10),
     ) as IList
   } else {
     startColumn = dateColumnStore.dateColumns.find(
@@ -84,7 +86,8 @@ export const onDragEndLogic = ({
 
   if (destinationIsList) {
     finishColumn = listCollection.lists.find(
-      (list) => list.id === parseInt(destination.droppableId.split('-').pop()!),
+      (list) =>
+        list.id === parseInt(destination.droppableId.split('-').pop()!, 10),
     ) as IList
   } else {
     finishColumn = dateColumnStore.dateColumns.find(
@@ -96,7 +99,7 @@ export const onDragEndLogic = ({
     // REORDER TODO WITHIN THE SAME COLUMN
     const newOrder = Array.from(startColumn!.todoOrder)
     newOrder.splice(source.index, 1)
-    newOrder.splice(destination.index, 0, parseInt(draggableId))
+    newOrder.splice(destination.index, 0, parseInt(draggableId, 10))
 
     if (destinationIsList) {
       editList({ listId: finishColumn.id as number, todoOrder: newOrder })
@@ -115,7 +118,7 @@ export const onDragEndLogic = ({
     newStartOrder.splice(source.index, 1)
 
     const newFinishOrder = Array.from(finishColumn.todoOrder)
-    newFinishOrder.splice(destination.index, 0, parseInt(draggableId))
+    newFinishOrder.splice(destination.index, 0, parseInt(draggableId, 10))
 
     if (sourceIsList) {
       editList({ listId: startColumn.id as number, todoOrder: newStartOrder })
@@ -124,7 +127,7 @@ export const onDragEndLogic = ({
         ...startColumn,
         todoOrder: newStartOrder,
         todos: startColumn!.todos!.filter(
-          (todo) => todo.id !== parseInt(draggableId),
+          (todo) => todo.id !== parseInt(draggableId, 10),
         ),
       } as IDateColumn
 
@@ -136,7 +139,7 @@ export const onDragEndLogic = ({
       editList({ listId: finishColumn.id as number, todoOrder: newFinishOrder })
     } else {
       const movedTodo = startColumn!.todos!.filter(
-        (todo) => todo.id === parseInt(draggableId),
+        (todo) => todo.id === parseInt(draggableId, 10),
       )[0]
 
       const newFinishColumn: IDateColumn = {
@@ -155,3 +158,5 @@ export const onDragEndLogic = ({
     }
   }
 }
+
+export default onDragEndLogic

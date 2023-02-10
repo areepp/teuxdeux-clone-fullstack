@@ -2,11 +2,11 @@ import { GetServerSidePropsContext } from 'next'
 import Link from 'next/link'
 import { useRouter } from 'next/router'
 import { useState } from 'react'
+import { useMutation } from 'react-query'
 import { SubmitHandler, useForm } from 'react-hook-form'
 import Input, { Inputs } from '@/components/Auth/Input'
 import * as authService from '@/lib/auth.service'
 import Button from '@/components/Auth/Button'
-import { useMutation } from 'react-query'
 import useUserStore from '@/stores/user'
 
 const Login = () => {

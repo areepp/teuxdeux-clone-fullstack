@@ -5,12 +5,12 @@ import * as dateColumnService from '@/lib/dateColumn.service'
 import * as listService from '@/lib/list.service'
 import * as listCollectionService from '@/lib/listCollection.service'
 import CalendarView from '@/components/Dashboard/CalendarView'
-import { onDragEndLogic } from '@/helper/onDragEndLogic'
-import ListView from './ListView'
-import Setting from './Common/Setting'
+import onDragEndLogic from '@/helper/onDragEndLogic'
 import useDateColumnStore from '@/stores/dateColumns'
 import useSettingStore from '@/stores/settings'
 import useAxiosPrivate from '@/hooks/useAxiosPrivate'
+import ListView from './ListView'
+import Setting from './Common/Setting'
 
 const Dashboard = () => {
   const dateColumnStore = useDateColumnStore()
@@ -19,8 +19,7 @@ const Dashboard = () => {
   const queryClient = useQueryClient()
 
   const { data: listCollection } = useQuery('listCollection', () =>
-    listCollectionService.getListCollection(axiosPrivate),
-  )
+    listCollectionService.getListCollection(axiosPrivate)) // prettier-ignore
 
   const { mutate: editListOrder } = useMutation(
     (data: number[]) =>

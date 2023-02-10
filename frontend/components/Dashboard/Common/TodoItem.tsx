@@ -1,9 +1,9 @@
 import clsx from 'clsx'
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useRef, useState, KeyboardEvent } from 'react'
 import { Draggable } from 'react-beautiful-dnd'
 import { HiOutlineX, HiPencil } from 'react-icons/hi'
+import { useMutation, useQueryClient } from 'react-query'
 import * as todoService from '@/lib/todo.service'
-import { useMutation, useQuery, useQueryClient } from 'react-query'
 import useAxiosPrivate from '@/hooks/useAxiosPrivate'
 import { ITodo } from '@/types/ITodo'
 
@@ -78,16 +78,13 @@ const TodoItem = ({ item, index, colId, parent }: Props) => {
     }
   }
 
-  const handleCheckTodo = async (data: { checked: boolean }) => {
+  const handleCheckTodo = async () => {
     toggleCheckTodo()
   }
 
-  const handleCheckTodoKeyDown = async (
-    e: React.KeyboardEvent,
-    data: { checked: boolean },
-  ) => {
+  const handleCheckTodoKeyDown = async (e: KeyboardEvent) => {
     if (e.key === 'Enter') {
-      await handleCheckTodo(data)
+      await handleCheckTodo()
     }
   }
 
@@ -96,7 +93,7 @@ const TodoItem = ({ item, index, colId, parent }: Props) => {
     editTodoTextMutation()
   }
 
-  const handleKeyDown = async (e: React.KeyboardEvent<HTMLElement>) => {
+  const handleKeyDown = async (e: KeyboardEvent<HTMLElement>) => {
     if (e.key === 'Enter') {
       editTodoInputRef.current?.blur()
       editTodoTextMutation()
@@ -104,7 +101,11 @@ const TodoItem = ({ item, index, colId, parent }: Props) => {
   }
 
   return (
-    <Draggable draggableId={item.id.toString()} index={index}>
+    <Draggable
+      draggableId={item.id.toString()}
+      key={item.id.toString()}
+      index={index}
+    >
       {(provided) => (
         <div
           ref={provided.innerRef}
@@ -143,9 +144,8 @@ const TodoItem = ({ item, index, colId, parent }: Props) => {
                 role="checkbox"
                 tabIndex={0}
                 aria-checked={item.checked}
-                onClick={() => handleCheckTodo({ checked: !item.checked })}
-                onKeyDown={(e) =>
-                  handleCheckTodoKeyDown(e, { checked: !item.checked })} // prettier-ignore
+                onClick={() => handleCheckTodo()}
+                onKeyDown={handleCheckTodoKeyDown} // prettier-ignore
                 className={clsx(
                   'h-full flex-auto break-all flex items-center',
                   isHovered && 'max-w-[92%] break-all text-gray-900',

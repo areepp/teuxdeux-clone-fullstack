@@ -1,3 +1,4 @@
+import { Dispatch, SetStateAction } from 'react'
 import { Draggable, Droppable } from 'react-beautiful-dnd'
 import { HiOutlineX } from 'react-icons/hi'
 import { useQuery } from 'react-query'
@@ -7,7 +8,7 @@ import useAxiosPrivate from '@/hooks/useAxiosPrivate'
 import { IList } from '@/types/IList'
 
 interface Props {
-  setIsReOrderModalVisible: React.Dispatch<React.SetStateAction<boolean>>
+  setIsReOrderModalVisible: Dispatch<SetStateAction<boolean>>
 }
 
 const ReOrderListModal = ({ setIsReOrderModalVisible }: Props) => {

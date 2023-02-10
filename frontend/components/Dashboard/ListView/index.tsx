@@ -2,18 +2,18 @@ import { useState } from 'react'
 import { IoIosAdd, IoMdArrowDropdown, IoMdArrowDropup } from 'react-icons/io'
 import SwiperCore from 'swiper'
 import { Swiper, SwiperSlide } from 'swiper/react'
+import { useMutation, useQuery, useQueryClient } from 'react-query'
 import * as listService from '@/lib/list.service'
 import * as listCollectionService from '@/lib/listCollection.service'
 import useSettingStore from '@/stores/settings'
+import useAxiosPrivate from '@/hooks/useAxiosPrivate'
+import { IList } from '@/types/IList'
+import { ITodo } from '@/types/ITodo'
 import ListColumn from './ListColumn'
 import NavLeft from './NavLeft'
 import NavRight from './NavRight'
 import ReOrderListModal from './ReOrderListModal'
 import SlideProgress from './SlideProgress'
-import { useMutation, useQuery, useQueryClient } from 'react-query'
-import useAxiosPrivate from '@/hooks/useAxiosPrivate'
-import { IList } from '@/types/IList'
-import { ITodo } from '@/types/ITodo'
 
 const ListView = () => {
   const settingStore = useSettingStore()
@@ -25,8 +25,9 @@ const ListView = () => {
   const queryClient = useQueryClient()
 
   const { isLoading, isError, data } = useQuery('listCollection', () =>
-    listCollectionService.getListCollection(axiosPrivate).then((data) => data),
-  )
+    listCollectionService
+      .getListCollection(axiosPrivate)
+      .then((resData) => resData)) // prettier-ignore
 
   const { mutate } = useMutation(() => listService.createList(axiosPrivate), {
     onSuccess: () => queryClient.invalidateQueries('listCollection'),
@@ -103,8 +104,7 @@ const ListView = () => {
                 let todos
                 if (list.todos.length === 0) todos = null
                 todos = list.todoOrder.map((todoId) =>
-                  list.todos.find((todo) => todo.id === todoId),
-                ) as ITodo[]
+                  list.todos.find((todo) => todo.id === todoId)) as ITodo[] // prettier-ignore
 
                 return (
                   <SwiperSlide className="w-full" key={list.id}>

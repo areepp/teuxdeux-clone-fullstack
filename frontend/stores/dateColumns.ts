@@ -1,7 +1,7 @@
+/* eslint-disable no-unused-vars */
+import create from 'zustand'
 import { getInitialDateColumns } from '@/helper/dateHelper'
 import { IDateColumn } from '@/types/IDateColumn'
-import update from 'immutability-helper'
-import create from 'zustand'
 
 interface State {
   dateColumns: IDateColumn[]
@@ -32,19 +32,17 @@ const useDateColumnStore = create<DateColumnStore>((set: any) => ({
     })),
   syncColumns: (cloudColumns: IDateColumn[]) =>
     // REPLACE THE LOCAL COLUMN STATE WITH THE COLUMN FROM API IF MATCH
-    set((state: State) => {
-      return {
-        dateColumns: state.dateColumns.map(
-          (local: IDateColumn) =>
-            cloudColumns.find((cloud) => cloud.id === local.id) || local,
-        ),
-      }
-    }),
+    set((state: State) => ({
+      dateColumns: state.dateColumns.map(
+        (local: IDateColumn) =>
+          cloudColumns.find((cloud) => cloud.id === local.id) || local,
+      ),
+    })),
   editColumnById: (columnId: string, newColumn: IDateColumn) =>
+    // prettier-ignore
     set((state: State) => ({
       dateColumns: state.dateColumns.map((column: IDateColumn) =>
-        column.id === columnId ? newColumn : column,
-      ),
+        (column.id === columnId ? newColumn : column)),
     })),
 }))
 
