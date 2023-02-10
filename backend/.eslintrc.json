@@ -38,5 +38,6 @@
       },
       "typescript": {}
     }
-  }
+  },
+  "ignorePatterns": ["dist/*"]
 }
