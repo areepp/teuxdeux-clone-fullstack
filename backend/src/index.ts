@@ -34,7 +34,7 @@ app.use('/api/date-columns', dateColumnRouter)
 
 app.use(errorHandler)
 
-const PORT = process.env.port || 5000
+const PORT = process.env.PORT || 5000
 
 app.listen(PORT, () => {
   // eslint-disable-next-line no-console
