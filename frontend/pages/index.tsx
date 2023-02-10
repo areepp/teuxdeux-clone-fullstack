@@ -30,15 +30,16 @@ const Index = ({ accessToken }: { accessToken: string }) => {
     setUser(accessToken)
   }, [setUser, accessToken])
   return (
-    <div className="flex flex-col h-full">
-      <Header />
-      <ErrorBoundary
-        FallbackComponent={ErrorFallback}
-        onReset={() => setUser(accessToken)}
-      >
+    <ErrorBoundary
+      FallbackComponent={ErrorFallback}
+      onReset={() => setUser(accessToken)}
+    >
+      <div className="flex flex-col h-full">
+        <Header />
+
         <Dashboard />
-      </ErrorBoundary>
-    </div>
+      </div>
+    </ErrorBoundary>
   )
 }
 
