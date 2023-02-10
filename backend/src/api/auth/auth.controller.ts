@@ -57,6 +57,7 @@ export const login = async (
       secure: false,
       sameSite: 'strict',
       path: '/',
+      domain: process.env.CLIENT_DOMAIN,
     })
 
     return res.json({ accessToken })
