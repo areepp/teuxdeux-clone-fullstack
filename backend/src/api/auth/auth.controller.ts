@@ -1,6 +1,7 @@
 import { NextFunction, Request, Response } from 'express'
 import jwt from 'jsonwebtoken'
 import { JWTPayload } from '../../types/jwt'
+import ApiError from '../../utils/CustomException'
 import * as listCollectionService from '../listCollection/listCollection.service'
 import * as authService from './auth.service'
 
@@ -53,10 +54,13 @@ export const login = async (
     res.cookie('jwt', refreshToken, {
       httpOnly: true,
       maxAge: 24 * 60 * 60 * 7 * 1000, // 7 days
+      secure: true,
+      sameSite: 'lax',
+      path: '/',
     })
 
     return res.json({ accessToken })
-  } catch (error) {
+  } catch (error: any) {
     return next(error)
   }
 }
@@ -92,7 +96,7 @@ export const handleRefreshToken = async (
 
     if (!cookies?.jwt) {
       res.status(401)
-      throw new Error('unauthorized')
+      throw new ApiError('unauthorized', 401)
     }
 
     const refreshToken = cookies.jwt
@@ -100,7 +104,7 @@ export const handleRefreshToken = async (
 
     if (!userFound) {
       res.status(403)
-      throw new Error('Forbidden')
+      throw new ApiError('Forbidden', 403)
     }
 
     const { userInfo } = jwt.verify(
@@ -110,7 +114,7 @@ export const handleRefreshToken = async (
 
     if (userFound.id !== userInfo.id) {
       res.status(403)
-      throw new Error('Forbidden')
+      throw new ApiError('Forbidden', 403)
     }
 
     const accessToken = jwt.sign(
@@ -120,7 +124,7 @@ export const handleRefreshToken = async (
     )
 
     return res.json({ accessToken })
-  } catch (err) {
-    return next(err)
+  } catch (error) {
+    return next(error)
   }
 }

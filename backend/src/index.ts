@@ -21,7 +21,7 @@ app.use(cors(corsOptions))
 app.use(express.json())
 app.use(cookieParser())
 
-app.get('/', (_req, res) => res.send('Hello world!')) // for testing the domain
+app.get('/', (_req, res) => res.send('Hello world!'))
 
 app.use('/api/auth', authRouter)
 

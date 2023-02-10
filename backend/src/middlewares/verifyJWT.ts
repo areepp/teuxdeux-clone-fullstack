@@ -2,12 +2,12 @@ import { NextFunction, Request, Response } from 'express'
 import jwt from 'jsonwebtoken'
 import User from '../api/auth/auth.model'
 import { JWTPayload } from '../types/jwt'
+import ApiError from '../utils/CustomException'
 
 const verifyJWT = (req: Request, res: Response, next: NextFunction) => {
   const authHeader = req.headers.authorization
   if (!authHeader) {
-    res.status(401)
-    throw new Error('user unauthorized')
+    throw new ApiError('user unauthorized', 401)
   }
   const token = authHeader.split(' ')[1]
   try {
@@ -19,7 +19,7 @@ const verifyJWT = (req: Request, res: Response, next: NextFunction) => {
     next()
   } catch (err) {
     res.status(403)
-    throw new Error('user unauthorized')
+    throw new ApiError('user unauthorized', 403)
   }
 }
 

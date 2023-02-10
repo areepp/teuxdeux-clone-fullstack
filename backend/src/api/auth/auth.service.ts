@@ -1,16 +1,13 @@
 import bcrypt from 'bcryptjs'
+import ApiError from '../../utils/CustomException'
 import db from '../../utils/db'
 import { AuthSchema } from './auth.model'
-import { ResponseError } from '../../types/Error'
 
 export const signup = async ({ email, password }: AuthSchema) => {
   const userExists = await db.user.count({ where: { email } })
 
   if (userExists) {
-    const error: ResponseError = new Error()
-    error.message = 'User with that email address already exists'
-    error.status = 422
-    throw error
+    throw new ApiError('User with the email address already exists.', 403)
   }
 
   const passwordHash = await bcrypt.hash(password, 10)
@@ -29,13 +26,13 @@ export const login = async ({ email, password }: AuthSchema) => {
   const user = await db.user.findUnique({ where: { email } })
 
   if (!user) {
-    throw new Error('Incorrect email or password')
+    throw new ApiError('Incorrect email or password.', 401)
   }
 
   const passwordMatches = await bcrypt.compare(password, user.password)
 
   if (!passwordMatches) {
-    throw new Error('Incorrect email or password')
+    throw new ApiError('Incorrect email or password.', 401)
   }
 
   return user
