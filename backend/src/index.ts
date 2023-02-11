@@ -17,7 +17,7 @@ dotenv.config()
 const app = express()
 
 app.use((req, res, next) => {
-  // res.header('Access-Control-Allow-Credentials', true)
+  res.header('Access-Control-Allow-Credentials', 'true')
   res.header(
     'Access-Control-Allow-Origin',
     process.env.NODE_ENV === 'development'
@@ -36,7 +36,6 @@ app.use((req, res, next) => {
 }) // new
 
 // app.use(credentials)
-app.set('trust proxy', 1)
 app.use(cors(corsOptions))
 app.use(express.json())
 app.use(cookieParser())
