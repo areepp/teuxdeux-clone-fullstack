@@ -54,9 +54,13 @@ export const login = async (
     res.cookie('jwt', refreshToken, {
       httpOnly: true,
       maxAge: 24 * 60 * 60 * 7 * 1000, // 7 days
-      secure: process.env.NODE_ENV === 'development',
+      secure: true,
       sameSite: 'none',
       path: '/',
+      domain:
+        process.env.NODE_ENV === 'development'
+          ? 'localhost'
+          : 'teuxdeux-clone.up.railway.app',
     })
 
     return res.json({ accessToken })

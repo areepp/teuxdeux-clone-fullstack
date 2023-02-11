@@ -16,6 +16,25 @@ dotenv.config()
 
 const app = express()
 
+app.use((req, res, next) => {
+  // res.header('Access-Control-Allow-Credentials', true)
+  res.header(
+    'Access-Control-Allow-Origin',
+    process.env.NODE_ENV === 'development'
+      ? 'localhost'
+      : 'teuxdeux-clone.up.railway.app',
+  )
+  res.header(
+    'Access-Control-Allow-Methods',
+    'GET,PUT,POST,DELETE,UPDATE,OPTIONS',
+  )
+  res.header(
+    'Access-Control-Allow-Headers',
+    'X-Requested-With, X-HTTP-Method-Override, Content-Type, Accept',
+  )
+  next()
+}) // new
+
 // app.use(credentials)
 app.set('trust proxy', 1)
 app.use(cors(corsOptions))
