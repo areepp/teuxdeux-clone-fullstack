@@ -58,9 +58,7 @@ export const login = async (
       sameSite: 'none',
       path: '/',
       domain:
-        process.env.NODE_ENV === 'development'
-          ? 'localhost'
-          : 'teuxdeux-clone.up.railway.app',
+        process.env.NODE_ENV === 'development' ? 'localhost' : 'railway.app',
     })
 
     return res.json({ accessToken })
