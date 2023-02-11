@@ -1,11 +1,21 @@
 import { NextFunction, Request, Response } from 'express'
-import ALLOWED_ORIGINS from '../utils/allowedOrigins'
 
 const credentials = (req: Request, res: Response, next: NextFunction) => {
-  const origin = req.headers.origin ? req.headers.origin : ''
-  if (ALLOWED_ORIGINS.includes(origin)) {
-    res.header('Access-Control-Allow-Credentials', 'true')
-  }
+  res.header('Access-Control-Allow-Credentials', 'true')
+  res.header(
+    'Access-Control-Allow-Origin',
+    process.env.NODE_ENV === 'development'
+      ? 'localhost'
+      : 'teuxdeux-clone.up.railway.app',
+  )
+  res.header(
+    'Access-Control-Allow-Methods',
+    'GET,PUT,POST,DELETE,UPDATE,OPTIONS',
+  )
+  res.header(
+    'Access-Control-Allow-Headers',
+    'X-Requested-With, X-HTTP-Method-Override, Content-Type, Accept',
+  )
   next()
 }
 
