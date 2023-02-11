@@ -9,14 +9,15 @@ import dateColumnRouter from './api/dateColumn/dateColumn.router'
 import authRouter from './api/auth/auth.router'
 import errorHandler from './middlewares/errorHandler'
 import verifyJWT from './middlewares/verifyJWT'
-import credentials from './middlewares/credentials'
+// import credentials from './middlewares/credentials'
 import corsOptions from './utils/corsOptions'
 
 dotenv.config()
 
 const app = express()
 
-app.use(credentials)
+// app.use(credentials)
+app.set('trust proxy', 1)
 app.use(cors(corsOptions))
 app.use(express.json())
 app.use(cookieParser())

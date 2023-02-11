@@ -5,7 +5,7 @@
   "scripts": {
     "build": "tsc",
     "start": "node dist/index.js",
-    "dev": "nodemon src/index.ts",
+    "dev": "export NODE_ENV=development && nodemon src/index.ts",
     "check-types": "tsc --noEmit",
     "lint": "npx eslint . --ext .ts"
   },
