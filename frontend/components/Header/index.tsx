@@ -1,16 +1,19 @@
 import { useRouter } from 'next/router'
 import { useState } from 'react'
+import { useMutation } from 'react-query'
 import useUserStore from '@/stores/user'
 import * as authService from '@/lib/auth.service'
 import MyOutsideClickHandler from '../Common/MyOutsideClickHandler'
+import Spinner from '../Auth/Spinner'
 
 const Profile = () => {
   const router = useRouter()
   const { user, resetUser } = useUserStore()
   const [isProfileClicked, setIsProfileClicked] = useState(false)
+  const { isLoading, mutateAsync } = useMutation(authService.logOut)
 
   const handleLogOut = async () => {
-    await authService.logOut()
+    await mutateAsync()
     resetUser()
     router.push('/login')
   }
@@ -34,7 +37,7 @@ const Profile = () => {
             className="z-50 absolute top-3/4 left-2 bg-white px-2 py-1 rounded text-xs font-inter text-primary border border-primary"
             onClick={handleLogOut}
           >
-            log out
+            {isLoading ? <Spinner /> : 'log out'}
           </button>
         </MyOutsideClickHandler>
       )}

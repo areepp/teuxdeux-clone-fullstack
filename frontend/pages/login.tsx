@@ -32,17 +32,18 @@ const Login = () => {
     }
   }
 
-  // const demoLogin = async () => {
-  //   try {
-  //     await mutateAsync({
-  //       email: 'demo@test.com',
-  //       password: 'demogorgon',
-  //     })
-  //     router.push('/')
-  //   } catch (error: any) {
-  //     console.log(error)
-  //   }
-  // }
+  const demoLogin = async () => {
+    try {
+      const response = await mutateAsync({
+        email: 'test@test.com',
+        password: 'test123',
+      })
+      setUser(response.data.accessToken)
+      router.push('/')
+    } catch (error: any) {
+      setErrorMessage(error.response.data.message)
+    }
+  }
 
   return (
     <div className="w-screen h-screen flex flex-col items-center justify-center">
@@ -73,13 +74,13 @@ const Login = () => {
 
         <p className="mt-4 w-full text-center">or</p>
 
-        {/* <Button
+        <Button
           className="mt-4"
           text="Click here to log in using demo account"
           disabled={isLoading}
           type="submit"
           onClick={demoLogin}
-        /> */}
+        />
 
         {/* FOOTER */}
         <p className="mt-4">
