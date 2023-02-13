@@ -1,5 +1,4 @@
 # teuxdeux-clone-fullstack
-visit here https://teuxdeux-clone.up.railway.app
 
 tech stack : Next.js, Express.js, PostgreSQL
 
