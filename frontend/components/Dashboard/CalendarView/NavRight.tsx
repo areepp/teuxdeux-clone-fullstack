@@ -9,7 +9,7 @@ import {
 } from '@/helper/dateHelper'
 import MyOutsideClickHandler from '@/components/Common/MyOutsideClickHandler'
 import useDayStore from '@/stores/dateColumns'
-import useDateColumnQuery from '@/hooks/useDateColumnQuery'
+import useDateColumnQuery from '@/hooks/react-query-hooks/useDateColumnQuery'
 import Arrow from '../Common/Arrow'
 
 interface Props {

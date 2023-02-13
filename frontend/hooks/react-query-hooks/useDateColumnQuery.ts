@@ -1,8 +1,7 @@
 import { useQuery, UseQueryOptions } from 'react-query'
 import * as dateColumnService from '@/lib/dateColumn.service'
-import useAxiosPrivate from './useAxiosPrivate'
-import { useEffect, useState } from 'react'
 import useDateColumnStore from '@/stores/dateColumns'
+import useAxiosPrivate from '../useAxiosPrivate'
 
 const useDateColumnQuery = (
   ids: string[],
@@ -19,14 +18,13 @@ const useDateColumnQuery = (
       dateColumnService.getDateColumnsByIds(axiosPrivate, {
         ids,
       }),
-    options,
+    {
+      onSuccess: (data) => {
+        dateColumnStore.syncColumns(data)
+      },
+      ...options,
+    },
   )
-
-  useEffect(() => {
-    if (query.isSuccess) {
-      dateColumnStore.syncColumns(query.data)
-    }
-  }, [query.isSuccess, query.isFetching])
 
   return query
 }
