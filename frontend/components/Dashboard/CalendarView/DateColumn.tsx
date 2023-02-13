@@ -2,18 +2,16 @@ import clsx from 'clsx'
 import { KeyboardEvent, useState, FocusEvent } from 'react'
 import { Droppable } from 'react-beautiful-dnd'
 import SwiperCore from 'swiper'
-import { useMutation, useQueryClient } from 'react-query'
 import {
   checkIsPast,
   checkIsToday,
   getDayOfTheWeek,
   getFullDate,
 } from '@/helper/dateHelper'
-import * as todoService from '@/lib/todo.service'
 import useSettingStore from '@/stores/settings'
 import { IDateColumn } from '@/types/IDateColumn'
 import { ITodo } from '@/types/ITodo'
-import useAxiosPrivate from '@/hooks/useAxiosPrivate'
+import useAddTodoToDateColumn from '@/hooks/react-query-hooks/todo/useAddTodoToDateColumn'
 import TodoItem from '../Common/TodoItem'
 import getRenderClone from '../Common/getRenderClone'
 
@@ -25,22 +23,16 @@ interface Props {
 }
 
 const DateColumn = ({ todos, column, index, swiperRef }: Props) => {
-  const queryClient = useQueryClient()
-  const axiosPrivate = useAxiosPrivate()
   const settingStore = useSettingStore()
   const [newTodoInputValue, setNewTodoInputValue] = useState<string>('')
   const isToday = checkIsToday(column.id)
   const isPast = checkIsPast(column.id)
   const isColumnOnFarLeft = index === swiperRef?.realIndex
 
-  const { mutate: addTodoMutation } = useMutation(
-    () =>
-      todoService.addTodo(axiosPrivate, {
-        text: newTodoInputValue,
-        dateColumnId: column.id,
-      }),
-    { onSuccess: () => queryClient.invalidateQueries('dateColumn') },
-  )
+  const { mutate: addTodoMutation } = useAddTodoToDateColumn({
+    text: newTodoInputValue,
+    dateColumnId: column.id,
+  })
 
   const renderClone = getRenderClone(todos)
   // renderClone allows to move todo item to other parent

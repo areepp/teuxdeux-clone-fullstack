@@ -2,10 +2,11 @@ import clsx from 'clsx'
 import { useEffect, useRef, useState, KeyboardEvent } from 'react'
 import { Draggable } from 'react-beautiful-dnd'
 import { HiOutlineX, HiPencil } from 'react-icons/hi'
-import { useMutation, useQueryClient } from 'react-query'
-import * as todoService from '@/lib/todo.service'
-import useAxiosPrivate from '@/hooks/useAxiosPrivate'
 import { ITodo } from '@/types/ITodo'
+import useDeleteTodoFromList from '@/hooks/react-query-hooks/todo/useDeleteTodoFromList'
+import useToggleCheckTodo from '@/hooks/react-query-hooks/todo/useToggleCheckTodo'
+import useEditTodoText from '@/hooks/react-query-hooks/todo/useEditTodoText'
+import useDeleteTodoFromDateColumn from '@/hooks/react-query-hooks/todo/useDeleteTodoFromDateColumn'
 
 interface Props {
   item: ITodo
@@ -18,53 +19,29 @@ const TodoItem = ({ item, index, colId, parent }: Props) => {
   const [isEditing, setIsEditing] = useState(false)
   const editTodoInputRef = useRef<HTMLInputElement>(null)
   const [isHovered, setIsHovered] = useState(false)
-  const queryClient = useQueryClient()
-  const axiosPrivate = useAxiosPrivate()
   const [todoText, setTodoText] = useState(item.text)
 
-  const { mutate: deleteTodoFromList } = useMutation(
-    () =>
-      todoService.deleteTodo(axiosPrivate, {
-        todoId: item.id,
-        listId: colId as number,
-      }),
-    {
-      onSuccess: () => queryClient.invalidateQueries(parent),
-    },
-  )
+  const { mutate: deleteTodoFromList } = useDeleteTodoFromList({
+    todoId: item.id,
+    listId: colId as number,
+  })
 
-  const { mutate: deleteTodoFromDateColumn } = useMutation(
-    () =>
-      todoService.deleteTodo(axiosPrivate, {
-        todoId: item.id,
-        dateColumnId: colId as string,
-      }),
-    {
-      onSuccess: () => queryClient.invalidateQueries(parent),
-    },
-  )
+  const { mutate: deleteTodoFromDateColumn } = useDeleteTodoFromDateColumn({
+    todoId: item.id,
+    dateColumnId: colId as string,
+  })
 
-  const { mutate: toggleCheckTodo } = useMutation(
-    () =>
-      todoService.editTodo(axiosPrivate, {
-        todoId: item.id.toString(),
-        checked: !item.checked,
-      }),
-    {
-      onSuccess: () => queryClient.invalidateQueries(parent),
-    },
-  )
+  const { mutate: toggleCheckTodo } = useToggleCheckTodo({
+    parent,
+    todoId: item.id,
+    checked: !item.checked,
+  })
 
-  const { mutate: editTodoTextMutation } = useMutation(
-    () =>
-      todoService.editTodo(axiosPrivate, {
-        todoId: item.id.toString(),
-        text: todoText,
-      }),
-    {
-      onSuccess: () => queryClient.invalidateQueries(parent),
-    },
-  )
+  const { mutate: editTodoTextMutation } = useEditTodoText({
+    parent,
+    todoId: item.id,
+    text: todoText,
+  })
 
   useEffect(() => {
     editTodoInputRef.current?.focus()

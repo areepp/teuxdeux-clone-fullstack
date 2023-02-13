@@ -1,11 +1,9 @@
 import { useState, KeyboardEvent, FocusEvent } from 'react'
 import { Droppable } from 'react-beautiful-dnd'
-import { useMutation, useQueryClient } from 'react-query'
-import * as listService from '@/lib/list.service'
 import { ITodo } from '@/types/ITodo'
-import useAxiosPrivate from '@/hooks/useAxiosPrivate'
+import useAddTodoToListMutation from '@/hooks/react-query-hooks/todo/useAddTodoToList'
+import useEditListTitle from '@/hooks/react-query-hooks/list/useEditListTitle'
 import { IList } from '@/types/IList'
-import * as todoService from '@/lib/todo.service'
 import TodoItem from '../Common/TodoItem'
 import getRenderClone from '../Common/getRenderClone'
 import ListOption from './ListOption'
@@ -18,25 +16,16 @@ interface Props {
 const ListColumn = ({ todos, list }: Props) => {
   const [newTodoInputValue, setNewTodoInputValue] = useState<string>('')
   const [listTitle, setListTitle] = useState(list.title)
-  const queryClient = useQueryClient()
-  const axiosPrivate = useAxiosPrivate()
 
-  const { mutate: addTodoMutation } = useMutation(
-    () =>
-      todoService.addTodo(axiosPrivate, {
-        text: newTodoInputValue,
-        listId: list.id,
-      }),
-    { onSuccess: () => queryClient.invalidateQueries('listCollection') },
-  )
+  const { mutate: addTodoMutation } = useAddTodoToListMutation({
+    text: newTodoInputValue,
+    listId: list.id,
+  })
 
-  const { mutate: editListMutation } = useMutation(
-    () =>
-      listService.editList(axiosPrivate, { listId: list.id, title: listTitle }),
-    {
-      onSuccess: () => queryClient.invalidateQueries('listCollection'),
-    },
-  )
+  const { mutate: editListMutation } = useEditListTitle({
+    listId: list.id,
+    title: listTitle,
+  })
 
   const renderClone = getRenderClone(todos)
   // renderClone allows to move todo item to another parent container

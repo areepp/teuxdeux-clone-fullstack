@@ -23,5 +23,5 @@ export const editTodo = async (
     todoId,
     text,
     checked,
-  }: { todoId: string; text?: string; checked?: boolean },
+  }: { todoId: number; text?: string; checked?: boolean },
 ) => axiosPrivate.patch(`/todos/${todoId}`, { text, checked })

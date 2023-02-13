@@ -2,11 +2,9 @@ import { useState } from 'react'
 import { IoIosAdd, IoMdArrowDropdown, IoMdArrowDropup } from 'react-icons/io'
 import SwiperCore from 'swiper'
 import { Swiper, SwiperSlide } from 'swiper/react'
-import { useMutation, useQuery, useQueryClient } from 'react-query'
-import * as listService from '@/lib/list.service'
-import * as listCollectionService from '@/lib/listCollection.service'
 import useSettingStore from '@/stores/settings'
-import useAxiosPrivate from '@/hooks/useAxiosPrivate'
+import useGetListCollection from '@/hooks/react-query-hooks/list/useGetListCollection'
+import useCreateList from '@/hooks/react-query-hooks/list/useCreateList'
 import { IList } from '@/types/IList'
 import { ITodo } from '@/types/ITodo'
 import ListColumn from './ListColumn'
@@ -18,20 +16,12 @@ import SlideProgress from './SlideProgress'
 const ListView = () => {
   const settingStore = useSettingStore()
   const [swiperRef, setSwiperRef] = useState<SwiperCore>()
-  const [isListVisible, setIsListVisible] = useState(false)
+  const [isListVisible, setIsListVisible] = useState(true)
   const [isReOrderModalVisible, setIsReOrderModalVisible] = useState(false)
   const [activeSlideIndex, setActiveSlideIndex] = useState(0)
-  const axiosPrivate = useAxiosPrivate()
-  const queryClient = useQueryClient()
 
-  const { isLoading, isError, data } = useQuery('listCollection', () =>
-    listCollectionService
-      .getListCollection(axiosPrivate)
-      .then((resData) => resData)) // prettier-ignore
-
-  const { mutate } = useMutation(() => listService.createList(axiosPrivate), {
-    onSuccess: () => queryClient.invalidateQueries('listCollection'),
-  })
+  const { isLoading, isError, data } = useGetListCollection()
+  const { mutate } = useCreateList()
 
   if (isLoading) return <div>loading...</div>
 

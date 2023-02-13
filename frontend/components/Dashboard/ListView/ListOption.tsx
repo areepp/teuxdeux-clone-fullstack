@@ -1,25 +1,17 @@
 import MyOutsideClickHandler from '@/components/Common/MyOutsideClickHandler'
-import useAxiosPrivate from '@/hooks/useAxiosPrivate'
-import * as listService from '@/lib/list.service'
+import useDeleteList from '@/hooks/react-query-hooks/list/useDeleteList'
 import { useState } from 'react'
 import { TbDotsVertical } from 'react-icons/tb'
 import { TfiTrash } from 'react-icons/tfi'
-import { useMutation, useQueryClient } from 'react-query'
 
 interface Props {
   listId: number
 }
 
 const ListOption = ({ listId }: Props) => {
-  const queryClient = useQueryClient()
   const [isOptionOpen, setIsOptionOpen] = useState(false)
-  const axiosPrivate = useAxiosPrivate()
-  const { mutate } = useMutation(
-    () => listService.deleteList(axiosPrivate, { listId }),
-    {
-      onSuccess: () => queryClient.invalidateQueries('listCollection'),
-    },
-  )
+
+  const { mutate } = useDeleteList({ listId })
 
   const handleDeleteList = async () => {
     // eslint-disable-next-line no-alert
