@@ -3,12 +3,17 @@ import * as todoService from './todo.service'
 import { DeleteTodoSchema } from './todo.model'
 
 export const getTodos = async (
-  req: Request,
+  req: Request<{}, {}, {}, { ids: string }>,
   res: Response,
   next: NextFunction,
 ) => {
+  const ids = req.query.ids.split(';')
+
   try {
-    const todos = await todoService.getTodos()
+    const todos = await todoService.getTodos({
+      userId: req.user!.id,
+      dateColumnIds: ids,
+    })
     return res.status(200).json(todos)
   } catch (error: any) {
     return next(error)

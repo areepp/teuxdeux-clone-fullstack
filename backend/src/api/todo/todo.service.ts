@@ -3,7 +3,49 @@ import { DateColumn } from '../../types/DateColumn'
 import db from '../../utils/db'
 import Todo from './todo.model'
 
-export const getTodos = async (): Promise<Todo[]> => db.todo.findMany()
+export const getTodos = async ({
+  userId,
+  dateColumnIds,
+}: {
+  userId: string
+  dateColumnIds: string[]
+}) => {
+  const [listCollection, dateColumns] = await db.$transaction([
+    db.listCollection.findUnique({
+      where: {
+        userId,
+      },
+      include: {
+        lists: {
+          include: {
+            todos: true,
+          },
+        },
+      },
+    }),
+    db.dateColumn.findMany({
+      where: {
+        id: {
+          in: dateColumnIds,
+        },
+      },
+      include: {
+        todos: true,
+      },
+    }),
+  ])
+
+  const listTodos =
+    listCollection?.lists
+      .map((list) => list.todos)
+      .reduce((a, b) => a.concat(b), []) ?? []
+
+  const dateTodos =
+    dateColumns.map((date) => date.todos).reduce((a, b) => a.concat(b), []) ??
+    []
+
+  return listTodos.concat(dateTodos)
+}
 
 export const addTodo = async ({
   text,
