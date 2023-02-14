@@ -9,7 +9,8 @@ import {
 } from '@/helper/dateHelper'
 import MyOutsideClickHandler from '@/components/Common/MyOutsideClickHandler'
 import useDayStore from '@/stores/dateColumns'
-import useDateColumnQuery from '@/hooks/react-query-hooks/useDateColumnQuery'
+import useDateColumnQuery from '@/hooks/react-query-hooks/dateColumn/useDateColumnQuery'
+
 import Arrow from '../Common/Arrow'
 
 interface Props {
@@ -22,7 +23,7 @@ const NavRight = ({ navigationDisabled, swiperRef }: Props) => {
   const [isCalendarOpen, setIsCalendarOpen] = useState(false)
   const [selectedDate, setSelectedDate] = useState<Date>(new Date())
 
-  const { refetch } = useDateColumnQuery(
+  const { refetch: refetchDateColumn } = useDateColumnQuery(
     getReintiatedDateColumns(selectedDate).map((col) => col.id),
     { enabled: false },
   )
@@ -53,7 +54,7 @@ const NavRight = ({ navigationDisabled, swiperRef }: Props) => {
       swiperRef?.slideTo(clickedDayIndex, 600)
     } else {
       dateColumnStore.setColumns(getReintiatedDateColumns(day))
-      refetch()
+      refetchDateColumn()
       swiperRef?.slideTo(7, 0)
     }
   }

@@ -5,7 +5,8 @@ import { Swiper, SwiperSlide } from 'swiper/react'
 import { getNextFourDates, getPastFourDates } from '@/helper/dateHelper'
 import useDateColumnStore from '@/stores/dateColumns'
 import useSettingStore from '@/stores/settings'
-import useDateColumnQuery from '@/hooks/react-query-hooks/useDateColumnQuery'
+import useDateColumnQuery from '@/hooks/react-query-hooks/dateColumn/useDateColumnQuery'
+import useGetTodos from '@/hooks/react-query-hooks/todo/useGetTodos'
 import { ITodo } from '@/types/ITodo'
 import DateColumn from './DateColumn'
 import NavLeft from './NavLeft'
@@ -18,6 +19,10 @@ const CalendarView = () => {
   const [navigationDisabled, setNavigationDisabled] = useState(false)
 
   const { refetch } = useDateColumnQuery(
+    dateColumnStore.dateColumns.map((col) => col.id),
+  )
+
+  const { data: todos } = useGetTodos(
     dateColumnStore.dateColumns.map((col) => col.id),
   )
 
@@ -76,7 +81,7 @@ const CalendarView = () => {
               columnTodos = null
             } else {
               columnTodos = column.todoOrder.map(
-                (id) => column!.todos!.find((todo) => todo.id === id) as ITodo,
+                (id) => todos?.find((todo) => todo.id === id) as ITodo,
               )
             }
             return (

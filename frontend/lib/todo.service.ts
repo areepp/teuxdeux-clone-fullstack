@@ -1,4 +1,21 @@
+import { ITodo } from '@/types/ITodo'
 import { AxiosInstance } from 'axios'
+
+export const getTodos = async (
+  axiosPrivate: AxiosInstance,
+  { ids }: { ids: string[] },
+): Promise<ITodo[]> => {
+  try {
+    const response = await axiosPrivate.get('/todos', {
+      params: {
+        ids: ids.join(';'),
+      },
+    })
+    return response.data
+  } catch (error: any) {
+    return error.response
+  }
+}
 
 export const addTodo = async (
   axiosPrivate: AxiosInstance,
