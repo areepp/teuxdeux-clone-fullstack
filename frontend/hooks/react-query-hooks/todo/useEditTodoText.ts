@@ -1,27 +1,45 @@
 import useAxiosPrivate from '@/hooks/useAxiosPrivate'
 import { editTodo } from '@/lib/todo.service'
+import useDateColumnStore from '@/stores/dateColumns'
+import { ITodo } from '@/types/ITodo'
 import { useMutation, useQueryClient } from 'react-query'
 
-const useEditTodoText = ({
-  parent,
-  todoId,
-  text,
-}: {
-  parent: 'dateColumn' | 'listCollection'
-  todoId: number
-  text: string
-}) => {
+const useEditTodoText = () => {
   const axiosPrivate = useAxiosPrivate()
   const queryClient = useQueryClient()
+  const dateColumnStore = useDateColumnStore()
 
   const mutation = useMutation(
-    () =>
-      editTodo(axiosPrivate, {
-        todoId,
-        text,
-      }),
+    (data: { todoId: number; text: string }) => editTodo(axiosPrivate, data),
     {
-      onSuccess: () => queryClient.invalidateQueries(parent),
+      onMutate: async (data) => {
+        await queryClient.cancelQueries([
+          'todos',
+          dateColumnStore.dateColumns.map((col) => col.id),
+        ])
+
+        const previousTodos = queryClient.getQueryData([
+          'todos',
+          dateColumnStore.dateColumns.map((col) => col.id),
+        ])
+
+        queryClient.setQueryData(
+          ['todos', dateColumnStore.dateColumns.map((col) => col.id)],
+          (prev: any) =>
+            prev.map((todo: ITodo) =>
+              todo.id === data.todoId ? { ...todo, text: data.text } : todo,
+            ),
+        )
+        return { previousTodos }
+      },
+      onSuccess: () =>
+        queryClient.invalidateQueries([
+          'todos',
+          dateColumnStore.dateColumns.map((col) => col.id),
+        ]),
+      onError: (_err, _newTodo, context) => {
+        queryClient.setQueryData(['todos'], context?.previousTodos)
+      },
     },
   )
 

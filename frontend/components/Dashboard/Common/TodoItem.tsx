@@ -4,8 +4,8 @@ import { Draggable } from 'react-beautiful-dnd'
 import { HiOutlineX, HiPencil } from 'react-icons/hi'
 import { ITodo } from '@/types/ITodo'
 import useDeleteTodoFromList from '@/hooks/react-query-hooks/todo/useDeleteTodoFromList'
-import useToggleCheckTodo from '@/hooks/react-query-hooks/todo/useToggleCheckTodo'
 import useEditTodoText from '@/hooks/react-query-hooks/todo/useEditTodoText'
+import useToggleCheckTodo from '@/hooks/react-query-hooks/todo/useToggleCheckTodo'
 import useDeleteTodoFromDateColumn from '@/hooks/react-query-hooks/todo/useDeleteTodoFromDateColumn'
 
 interface Props {
@@ -31,17 +31,9 @@ const TodoItem = ({ item, index, colId, parent }: Props) => {
     dateColumnId: colId as string,
   })
 
-  const { mutate: toggleCheckTodo } = useToggleCheckTodo({
-    parent,
-    todoId: item.id,
-    checked: !item.checked,
-  })
+  const { mutate: toggleCheckTodo } = useToggleCheckTodo()
 
-  const { mutate: editTodoTextMutation } = useEditTodoText({
-    parent,
-    todoId: item.id,
-    text: todoText,
-  })
+  const { mutate: editTodoTextMutation } = useEditTodoText()
 
   useEffect(() => {
     editTodoInputRef.current?.focus()
@@ -56,7 +48,7 @@ const TodoItem = ({ item, index, colId, parent }: Props) => {
   }
 
   const handleCheckTodo = async () => {
-    toggleCheckTodo()
+    toggleCheckTodo({ todoId: item.id, checked: !item.checked })
   }
 
   const handleCheckTodoKeyDown = async (e: KeyboardEvent) => {
@@ -67,13 +59,13 @@ const TodoItem = ({ item, index, colId, parent }: Props) => {
 
   const handleOnBlur = async () => {
     setIsEditing(false)
-    editTodoTextMutation()
+    editTodoTextMutation({ todoId: item.id, text: todoText })
   }
 
   const handleKeyDown = async (e: KeyboardEvent<HTMLElement>) => {
     if (e.key === 'Enter') {
       editTodoInputRef.current?.blur()
-      editTodoTextMutation()
+      editTodoTextMutation({ todoId: item.id, text: todoText })
     }
   }
 
