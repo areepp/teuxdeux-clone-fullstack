@@ -1,7 +1,7 @@
 import { useQuery, UseQueryOptions } from 'react-query'
 import * as dateColumnService from '@/lib/dateColumn.service'
 import useDateColumnStore from '@/stores/dateColumns'
-import useAxiosPrivate from '../useAxiosPrivate'
+import useAxiosPrivate from '../../useAxiosPrivate'
 
 const useDateColumnQuery = (
   ids: string[],

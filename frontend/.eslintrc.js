@@ -22,6 +22,7 @@ module.exports = {
     semi: 'off',
     'implicit-arrow-linebreak': 'off',
     'no-plusplus': ['error', { allowForLoopAfterthoughts: true }],
+    'no-confusing-arrow': 'off',
     'operator-linebreak': 'off',
     'object-curly-newline': 'off',
     'react/react-in-jsx-scope': 'off',

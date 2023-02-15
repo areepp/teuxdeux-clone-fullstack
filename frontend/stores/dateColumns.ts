@@ -1,5 +1,7 @@
 /* eslint-disable no-unused-vars */
 import create from 'zustand'
+// eslint-disable-next-line import/no-extraneous-dependencies
+import { mountStoreDevtool } from 'simple-zustand-devtools'
 import { getInitialDateColumns } from '@/helper/dateHelper'
 import { IDateColumn } from '@/types/IDateColumn'
 
@@ -13,7 +15,7 @@ export interface DateColumnStore {
   unshiftColumns: (_newColumns: IDateColumn[]) => void
   pushColumns: (_newColumns: IDateColumn[]) => void
   syncColumns: (_cloudColumns: IDateColumn[]) => void
-  editColumnById: (_columnId: string, _newColumn: IDateColumn) => void
+  editColumnTodoOrder: (_columnId: string, _todoOrder: number[]) => void
 }
 
 const useDateColumnStore = create<DateColumnStore>((set: any) => ({
@@ -38,12 +40,16 @@ const useDateColumnStore = create<DateColumnStore>((set: any) => ({
           cloudColumns.find((cloud) => cloud.id === local.id) || local,
       ),
     })),
-  editColumnById: (columnId: string, newColumn: IDateColumn) =>
+  editColumnTodoOrder: (columnId: string, todoOrder: number[]) =>
     // prettier-ignore
     set((state: State) => ({
       dateColumns: state.dateColumns.map((column: IDateColumn) =>
-        (column.id === columnId ? newColumn : column)),
+        (column.id === columnId ? { ...column, todoOrder } : column)),
     })),
 }))
+
+if (process.env.NODE_ENV === 'development') {
+  mountStoreDevtool('DateColumnStore', useDateColumnStore)
+}
 
 export default useDateColumnStore

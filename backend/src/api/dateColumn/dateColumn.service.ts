@@ -7,9 +7,6 @@ export const getDateColumns = async ({ ids }: { ids: string[] }) =>
         in: ids,
       },
     },
-    include: {
-      todos: true,
-    },
   })
 
 export const editTodoOrder = async ({

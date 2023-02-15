@@ -104,12 +104,6 @@ const onDragEndLogic = ({
     if (destinationIsList) {
       editList({ listId: finishColumn.id as number, todoOrder: newOrder })
     } else {
-      const newColumn = {
-        ...startColumn,
-        todoOrder: newOrder,
-      } as IDateColumn
-
-      dateColumnStore.editColumnById(newColumn.id as string, newColumn)
       editDateColumn({ id: finishColumn.id as string, todoOrder: newOrder })
     }
   } else {
@@ -123,34 +117,12 @@ const onDragEndLogic = ({
     if (sourceIsList) {
       editList({ listId: startColumn.id as number, todoOrder: newStartOrder })
     } else {
-      const newStartColumn: IDateColumn = {
-        ...startColumn,
-        todoOrder: newStartOrder,
-        todos: startColumn!.todos!.filter(
-          (todo) => todo.id !== parseInt(draggableId, 10),
-        ),
-      } as IDateColumn
-
-      dateColumnStore.editColumnById(startColumn.id as string, newStartColumn)
       editDateColumn({ id: startColumn.id as string, todoOrder: newStartOrder })
     }
 
     if (destinationIsList) {
       editList({ listId: finishColumn.id as number, todoOrder: newFinishOrder })
     } else {
-      const movedTodo = startColumn!.todos!.filter(
-        (todo) => todo.id === parseInt(draggableId, 10),
-      )[0]
-
-      const newFinishColumn: IDateColumn = {
-        ...finishColumn,
-        todoOrder: newFinishOrder,
-        todos: finishColumn.todos
-          ? [...finishColumn.todos, movedTodo]
-          : [movedTodo],
-      } as IDateColumn
-
-      dateColumnStore.editColumnById(finishColumn.id as string, newFinishColumn)
       editDateColumn({
         id: finishColumn.id as string,
         todoOrder: newFinishOrder,

@@ -1,18 +1,14 @@
-import { useQuery } from 'react-query'
-import { getListCollection } from '@/lib/listCollection.service'
-import useAxiosPrivate from '@/hooks/useAxiosPrivate'
 import useSettingStore from '@/stores/settings'
+import useGetListCollection from '@/hooks/react-query-hooks/list/useGetListCollection'
 
 interface Props {
   activeSlideIndex: number
 }
 
 const SlideProgress = ({ activeSlideIndex }: Props) => {
-  const axiosPrivate = useAxiosPrivate()
   const settingStore = useSettingStore()
 
-  const { data } = useQuery('listCollection', () =>
-    getListCollection(axiosPrivate)) // prettier-ignore
+  const { data } = useGetListCollection()
 
   if (data!.listOrder.length <= settingStore.slidesPerView) {
     return null

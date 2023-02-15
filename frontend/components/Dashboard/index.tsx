@@ -1,46 +1,27 @@
 import { useEffect } from 'react'
 import { DragDropContext, DropResult } from 'react-beautiful-dnd'
-import { useMutation, useQuery, useQueryClient } from 'react-query'
-import * as dateColumnService from '@/lib/dateColumn.service'
-import * as listService from '@/lib/list.service'
-import * as listCollectionService from '@/lib/listCollection.service'
 import CalendarView from '@/components/Dashboard/CalendarView'
 import onDragEndLogic from '@/helper/onDragEndLogic'
 import useDateColumnStore from '@/stores/dateColumns'
 import useSettingStore from '@/stores/settings'
-import useAxiosPrivate from '@/hooks/useAxiosPrivate'
+import useGetListCollection from '@/hooks/react-query-hooks/list/useGetListCollection'
+import useEditListOrder from '@/hooks/react-query-hooks/list/useEditListOrder'
+import useEditList from '@/hooks/react-query-hooks/list/useEditList'
+import useEditDateColumn from '@/hooks/react-query-hooks/dateColumn/useEditDateColumn'
 import ListView from './ListView'
 import Setting from './Common/Setting'
 
 const Dashboard = () => {
   const dateColumnStore = useDateColumnStore()
   const settingStore = useSettingStore()
-  const axiosPrivate = useAxiosPrivate()
-  const queryClient = useQueryClient()
 
-  const { data: listCollection } = useQuery('listCollection', () =>
-    listCollectionService.getListCollection(axiosPrivate)) // prettier-ignore
+  const { data: listCollection } = useGetListCollection()
 
-  const { mutate: editListOrder } = useMutation(
-    (data: number[]) =>
-      listCollectionService.editListOrder(axiosPrivate, { listOrder: data }),
-    {
-      onSuccess: () => queryClient.invalidateQueries('listCollection'),
-    },
-  )
+  const { mutate: editListOrder } = useEditListOrder()
 
-  const { mutate: editList } = useMutation(
-    (data: { listId: number; todoOrder: number[] }) =>
-      listService.editList(axiosPrivate, data),
-    {
-      onSuccess: () => queryClient.invalidateQueries('listCollection'),
-    },
-  )
+  const { mutate: editList } = useEditList()
 
-  const { mutate: editDateColumn } = useMutation(
-    (data: { id: string; todoOrder: number[] }) =>
-      dateColumnService.editTodoOrder(axiosPrivate, data),
-  )
+  const { mutate: editDateColumn } = useEditDateColumn()
 
   useEffect(() => {
     const checkScreenSize = () => {

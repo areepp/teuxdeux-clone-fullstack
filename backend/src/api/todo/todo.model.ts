@@ -7,6 +7,10 @@ const Todo = z.object({
   checked: z.boolean(),
 })
 
+export const GetTodoSchema = z.object({
+  ids: z.string(),
+})
+
 export const EditTodoSchema = z.object({
   text: z.string().optional(),
   checked: z.boolean().optional(),

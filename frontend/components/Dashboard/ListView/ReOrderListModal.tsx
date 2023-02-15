@@ -1,21 +1,16 @@
 import { Dispatch, SetStateAction } from 'react'
 import { Draggable, Droppable } from 'react-beautiful-dnd'
 import { HiOutlineX } from 'react-icons/hi'
-import { useQuery } from 'react-query'
 import MyOutsideClickHandler from '@/components/Common/MyOutsideClickHandler'
-import * as listCollectionService from '@/lib/listCollection.service'
-import useAxiosPrivate from '@/hooks/useAxiosPrivate'
 import { IList } from '@/types/IList'
+import useGetListCollection from '@/hooks/react-query-hooks/list/useGetListCollection'
 
 interface Props {
   setIsReOrderModalVisible: Dispatch<SetStateAction<boolean>>
 }
 
 const ReOrderListModal = ({ setIsReOrderModalVisible }: Props) => {
-  const axiosPrivate = useAxiosPrivate()
-  const { isError, data } = useQuery('listCollection', () =>
-    listCollectionService.getListCollection(axiosPrivate),
-  )
+  const { isError, data } = useGetListCollection()
 
   if (isError || !data) return <div>error</div>
 

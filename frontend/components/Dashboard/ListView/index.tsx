@@ -2,11 +2,11 @@ import { useState } from 'react'
 import { IoIosAdd, IoMdArrowDropdown, IoMdArrowDropup } from 'react-icons/io'
 import SwiperCore from 'swiper'
 import { Swiper, SwiperSlide } from 'swiper/react'
-import { useMutation, useQuery, useQueryClient } from 'react-query'
-import * as listService from '@/lib/list.service'
-import * as listCollectionService from '@/lib/listCollection.service'
 import useSettingStore from '@/stores/settings'
-import useAxiosPrivate from '@/hooks/useAxiosPrivate'
+import useDateColumnStore from '@/stores/dateColumns'
+import useGetListCollection from '@/hooks/react-query-hooks/list/useGetListCollection'
+import useCreateList from '@/hooks/react-query-hooks/list/useCreateList'
+import useGetTodos from '@/hooks/react-query-hooks/todo/useGetTodos'
 import { IList } from '@/types/IList'
 import { ITodo } from '@/types/ITodo'
 import ListColumn from './ListColumn'
@@ -17,21 +17,17 @@ import SlideProgress from './SlideProgress'
 
 const ListView = () => {
   const settingStore = useSettingStore()
+  const dateColumnStore = useDateColumnStore()
   const [swiperRef, setSwiperRef] = useState<SwiperCore>()
-  const [isListVisible, setIsListVisible] = useState(false)
+  const [isListVisible, setIsListVisible] = useState(true)
   const [isReOrderModalVisible, setIsReOrderModalVisible] = useState(false)
   const [activeSlideIndex, setActiveSlideIndex] = useState(0)
-  const axiosPrivate = useAxiosPrivate()
-  const queryClient = useQueryClient()
 
-  const { isLoading, isError, data } = useQuery('listCollection', () =>
-    listCollectionService
-      .getListCollection(axiosPrivate)
-      .then((resData) => resData)) // prettier-ignore
-
-  const { mutate } = useMutation(() => listService.createList(axiosPrivate), {
-    onSuccess: () => queryClient.invalidateQueries('listCollection'),
-  })
+  const { isLoading, isError, data } = useGetListCollection()
+  const { mutate } = useCreateList()
+  const { data: todos } = useGetTodos(
+    dateColumnStore.dateColumns.map((col) => col.id),
+  )
 
   if (isLoading) return <div>loading...</div>
 
@@ -101,14 +97,17 @@ const ListView = () => {
             >
               {data.listOrder.map((id) => {
                 const list = data.lists.find((el) => el.id === id) as IList
-                let todos
-                if (list.todos.length === 0) todos = null
-                todos = list.todoOrder.map((todoId) =>
-                  list.todos.find((todo) => todo.id === todoId)) as ITodo[] // prettier-ignore
+                let columnTodos
+                if (list.todoOrder.length === 0) {
+                  columnTodos = null
+                } else {
+                  columnTodos = list.todoOrder.map((todoId) =>
+                    todos?.find((todo) => todo.id === todoId)) as ITodo[] // prettier-ignore
+                }
 
                 return (
                   <SwiperSlide className="w-full" key={list.id}>
-                    <ListColumn list={list} todos={todos} key={list.id} />
+                    <ListColumn list={list} todos={columnTodos} key={list.id} />
                   </SwiperSlide>
                 )
               })}
