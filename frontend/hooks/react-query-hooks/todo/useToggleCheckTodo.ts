@@ -36,7 +36,7 @@ const useToggleCheckTodo = () => {
 
         return { previousTodos }
       },
-      onSuccess: () =>
+      onSettled: () =>
         queryClient.invalidateQueries([
           'todos',
           dateColumnStore.dateColumns.map((col) => col.id),

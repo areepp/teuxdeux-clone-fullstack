@@ -21,15 +21,9 @@ const TodoItem = ({ item, index, colId, parent }: Props) => {
   const [isHovered, setIsHovered] = useState(false)
   const [todoText, setTodoText] = useState(item.text)
 
-  const { mutate: deleteTodoFromList } = useDeleteTodoFromList({
-    todoId: item.id,
-    listId: colId as number,
-  })
+  const { mutate: deleteTodoFromList } = useDeleteTodoFromList()
 
-  const { mutate: deleteTodoFromDateColumn } = useDeleteTodoFromDateColumn({
-    todoId: item.id,
-    dateColumnId: colId as string,
-  })
+  const { mutate: deleteTodoFromDateColumn } = useDeleteTodoFromDateColumn()
 
   const { mutate: toggleCheckTodo } = useToggleCheckTodo()
 
@@ -41,9 +35,12 @@ const TodoItem = ({ item, index, colId, parent }: Props) => {
 
   const handleDeleteTodo = async () => {
     if (parent === 'dateColumn') {
-      deleteTodoFromDateColumn()
+      deleteTodoFromDateColumn({
+        todoId: item.id,
+        dateColumnId: colId as string,
+      })
     } else {
-      deleteTodoFromList()
+      deleteTodoFromList({ todoId: item.id, listId: colId as number })
     }
   }
 

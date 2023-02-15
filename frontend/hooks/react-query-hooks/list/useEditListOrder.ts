@@ -9,7 +9,26 @@ const useEditListOrder = () => {
   const mutation = useMutation(
     (data: number[]) => editListOrder(axiosPrivate, { listOrder: data }),
     {
-      onSuccess: () => queryClient.invalidateQueries('listCollection'),
+      onMutate: async (data) => {
+        await queryClient.cancelQueries('listCollection')
+
+        const previousListCollection =
+          queryClient.getQueryData('listCollection')
+
+        queryClient.setQueryData('listCollection', (prev: any) => ({
+          ...prev,
+          listOrder: data,
+        }))
+
+        return { previousListCollection }
+      },
+      onSettled: () => queryClient.invalidateQueries('listCollection'),
+      onError: (_error, _data, context) => {
+        queryClient.setQueryData(
+          'listCollection',
+          context?.previousListCollection,
+        )
+      },
     },
   )
 

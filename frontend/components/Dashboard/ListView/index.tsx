@@ -98,9 +98,12 @@ const ListView = () => {
               {data.listOrder.map((id) => {
                 const list = data.lists.find((el) => el.id === id) as IList
                 let columnTodos
-                if (list.todoOrder.length === 0) columnTodos = null
-                columnTodos = list.todoOrder.map((todoId) =>
-                  todos?.find((todo) => todo.id === todoId)) as ITodo[] // prettier-ignore
+                if (list.todoOrder.length === 0) {
+                  columnTodos = null
+                } else {
+                  columnTodos = list.todoOrder.map((todoId) =>
+                    todos?.find((todo) => todo.id === todoId)) as ITodo[] // prettier-ignore
+                }
 
                 return (
                   <SwiperSlide className="w-full" key={list.id}>

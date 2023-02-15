@@ -17,10 +17,7 @@ const ListColumn = ({ todos, list }: Props) => {
   const [newTodoInputValue, setNewTodoInputValue] = useState<string>('')
   const [listTitle, setListTitle] = useState(list.title)
 
-  const { mutate: addTodoMutation } = useAddTodoToListMutation({
-    text: newTodoInputValue,
-    listId: list.id,
-  })
+  const { mutate: addTodoMutation } = useAddTodoToListMutation()
 
   const { mutate: editListMutation } = useEditListTitle({
     listId: list.id,
@@ -33,8 +30,8 @@ const ListColumn = ({ todos, list }: Props) => {
   // while maintaining the desired drag behavior
 
   const handleAddTodo = async () => {
+    addTodoMutation({ text: newTodoInputValue, listId: list.id })
     setNewTodoInputValue('')
-    addTodoMutation()
   }
 
   const handleKeyDown = async (e: KeyboardEvent<HTMLInputElement>) => {

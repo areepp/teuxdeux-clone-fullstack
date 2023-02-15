@@ -29,10 +29,7 @@ const DateColumn = ({ todos, column, index, swiperRef }: Props) => {
   const isPast = checkIsPast(column.id)
   const isColumnOnFarLeft = index === swiperRef?.realIndex
 
-  const { mutate: addTodoMutation } = useAddTodoToDateColumn({
-    text: newTodoInputValue,
-    dateColumnId: column.id,
-  })
+  const { mutate: addTodoMutation } = useAddTodoToDateColumn()
 
   const renderClone = getRenderClone(todos)
   // renderClone allows to move todo item to other parent
@@ -40,7 +37,7 @@ const DateColumn = ({ todos, column, index, swiperRef }: Props) => {
 
   const handleAddTodo = () => {
     setNewTodoInputValue('')
-    addTodoMutation()
+    addTodoMutation({ text: newTodoInputValue, dateColumnId: column.id })
   }
 
   const handleKeyDown = (e: KeyboardEvent) => {
